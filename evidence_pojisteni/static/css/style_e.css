@@ -110,6 +110,9 @@ html{
 h1, h2, th, strong, b{
     color: #640000ff;
 }
+em{
+    color: #640000ff;
+}
 h1{
     color: white;
     background:#640000ff;
