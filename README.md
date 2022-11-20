@@ -1,3 +1,3 @@
 # mujprojekt
 potřeba nainstalovat:
-    /n- Django
+- Django
