@@ -1,0 +1,259 @@
+html{
+    font-size: 0.9rem;
+}
+.body{
+    background-color: rgb(107, 100, 100);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+.do_bloku{
+    text-align: justify;
+}
+.sablona__header{
+    display: flex;
+    flex-direction: column;
+}
+#menu{
+    z-index: 10;
+    height: max-content;
+    background: rgb(175, 240, 167);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: black 0px 5px 5px;
+}
+.menu__tlacitko{
+    color: white;
+    text-decoration: none;
+    margin: 0px;
+    padding: 0 15px;
+    height: 3.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+.menu__tlacitko--zelene{
+    background: #00630ffd;
+}
+.menu__tlacitko--sede{
+    background: #6c757d;
+}
+.menu__tlacitko--vinove{
+    background: rgb(100, 0, 0);
+}
+.menu__tlacitko:hover, #menu__logo__odkaz:hover{
+    color:white;
+    opacity: 0.5;
+}
+.menu__tlacitko:active, #menu__logo__odkaz:active{
+    opacity: 0.2;
+}
+#menu__logo{
+    width: 100%;
+    display:flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+#menu__logo__odkaz{
+    height: 3.2rem;
+    background: #6c757d;
+}
+#menu__logo__obrazek{
+    height: inherit;
+    border: 2px solid #6c757d;
+}
+#menu__evidence{
+    width: 100%;
+    display:flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+#menu__uzivatel{
+    order: -1;
+    width: 100%;
+    display:flex;
+    justify-content:space-evenly;
+    flex-wrap: wrap;
+}
+.zprava{
+    max-width: 960px;
+    border-bottom: 2px solid black;
+    padding: 5px;
+}
+#zprava--chyba{
+    color:rgb(167, 0, 0);
+    background: rgb(230, 208, 208);
+}
+#zprava--info{
+    color:black;
+    background: rgb(238, 228, 209);
+}
+#zprava--uspech{
+    color:green;
+    background: rgb(221, 240, 218);
+}
+.sablona__section{
+    max-width: 960px;
+    background: rgb(229, 238, 227);
+}
+#logo--velke{
+    margin-top: 15px;
+    margin-bottom: 20px;
+}
+.sablona__section__section{
+    padding: 5px 5px;
+}
+h1, h2, th, strong, b{
+    color: #640000ff;
+}
+h1{
+    color: white;
+    background:#640000ff;
+    clip-path: polygon(0 0, 100% 0%, 90% 100%, 0% 100%);
+    padding: 10px 30px;
+}
+.tlacitka_na_okraji{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.tlacitka_na_okraji .tlacitka_mezery{
+    flex-grow: 1;
+}
+.section__tlacitko{
+    margin: 2px 0px;
+}
+.section__tlacitko:hover{
+    opacity: 0.5;
+}
+.section__tlacitko:active{
+    opacity: 0.2;
+}
+.tlacitka_mezery{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.tlacitka_mezery .section__tlacitko{
+    margin: 2px 2px;
+}
+.sablona__footer{
+    box-shadow: black 0px -5px 5px;
+    background: rgb(175, 240, 167);
+}
+#paticka{
+    padding: 10px 5px;
+    margin: 0px auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+}
+#paticka__loga{
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    flex-grow: 1;
+}
+.paticka__loga__obrazek{
+    height: 2.9rem;
+    margin: 2px 2px;
+}
+.paticka__loga__odkaz:hover{
+    opacity: 0.5;
+}
+.paticka__loga__odkaz:active{
+    opacity: 0.2;
+}
+#paticka__podpis{
+    display: flex;
+    justify-content: flex-end;
+    flex-grow: 1;
+}
+#paticka__podpis__obrazek {
+   height: 2.9rem;
+   margin: 2px 0px;
+}
+#fotografie{
+    border: 1px solid rgb(221, 221, 221);
+    border-radius: 6px;
+    padding: 5px;
+    max-width: 200px;
+    max-height: 200px;  
+}
+td{
+    vertical-align: middle;
+}
+.odstranit_potvrzeni{
+    width: 20px;
+    height: 20px;
+}
+.pagination{
+    height: 2.3em;
+    width: max-content;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.pagination__stranky--aktivni{
+    height: inherit;
+    background: white;
+    color: #0d6efd;
+    border-color: #dee2e6;
+}
+.pagination__stranky--neaktivni{
+    height: inherit;
+    background: white;
+    color: grey;
+    border-color: #dee2e6;
+}
+/*----------------------------------------------min-width: 960px--------------------------------------------*/
+@media (min-width: 960px){
+    html{
+        font-size: 1rem;
+    }
+    #menu{
+        flex-direction: row;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+    #menu__logo{
+        width:max-content;
+    }
+    #menu__evidence{
+        width:max-content;
+    }
+    #menu__uzivatel{
+        width: max-content;
+        order: 0;
+    }
+    .menu__tlacitko--krajni--prave{
+        border-radius: 0px 6px 6px 0px;
+    }
+    .menu__tlacitko--krajni--leve{
+        border-radius: 6px 0px 0px 6px;
+    }
+    .zprava{
+        width: 960px;
+        margin: 0px auto; 
+        border: 0px solid black;
+        border-top: 0px;
+    }
+    .sablona__section{
+        width: 960px;
+        margin: 15px auto;  
+        padding: 15px;
+    } 
+    #logo--velke{
+        margin-top: 5px;
+        margin-bottom: 20px;
+    }
+    #paticka{
+        padding: 8px 15px;
+        justify-content: space-between;
+    }
+}

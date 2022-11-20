@@ -1,0 +1,53 @@
+<!--
+  Stránka pro tvorbu nového pojištěnce nebo úpravu již vytvořeného.
+-->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% extends "sablona.html" %}
+    <!--
+      'django-crispy-forms' pro rychlé nastylování formuláře pomocí
+    frameworku 'Bootstrap'.
+    -->
+    {% load crispy_forms_tags %}
+    {% block content %}
+      <header class="sablona__section__header">
+        <!--
+          Rozlišujeme nadpis stránky pro nového pojištěníce a úpravu
+        pojištěníce.
+        -->
+        {% if status == "novy" %}
+          <h1>Nový pojištěnec</h1>
+        {% elif status == "upravit" %}
+          <h1>Upravit pojištěnce {{ pk }}</h1>
+        {% endif %}
+      </header>
+
+      <section class="sablona__section__section">
+        <!--
+          enctype="multipart/form-data" kvůli posílání fotografie
+        přes formulář.
+        -->
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <!--
+            Vužití 'django-crispy-forms' pro stylování formuláře.
+          -->
+          {{ formular|crispy }}
+          <input type="submit" class="btn btn-primary section__tlacitko" />
+        </form>
+
+        <form method="POST">
+          {% csrf_token %}
+          <button name="zpet" class="btn btn-secondary zpet section__tlacitko" >
+            Zpět
+          </button>
+        </form>
+        <br>
+      </section>
+    {% endblock %}
+  </body>
+</html>

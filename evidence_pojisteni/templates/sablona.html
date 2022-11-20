@@ -1,0 +1,258 @@
+<!--
+  Šablona aplikace 'evidence_pojisteni'.
+  Obsahuje jednotnou hlavičku 'header' a patičku 'footer' pro všechny
+stránky aplikace.
+  'header' obsahuje jednotné menu a lištu pro informační zprávy,
+poskytované aplikací. Např. 'Uživatel 24 byl odstraněn' a podobně.
+  'footer' obsahuje jednotnou patičku s logama a podpisem.
+-->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    {% load static %}
+    <!--
+      modul 'na_seznam' obsahuje dodělaný filtr pro převod proměnné na
+    seznam.
+    -->
+    {% load na_seznam %}
+    <link rel="stylesheet" href="{% static 'css/style_e.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <!--
+      'X-UA-Compatible' umožňuje vývojářům zvolit, jakou verzi
+    vykreslovacího režimu má IE použít.
+      -->
+      <!--
+      'ie=edge' říka IE, aby použil nejnovější verzi
+    renderovacího (zobrazovacího) enginu (jádra).
+    -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Pojišťovna Ježek</title>
+  </head>
+  <body class="body">
+    <!-- div header, footer -->
+    <div>
+      <header class="sablona__header">
+        <nav id="menu">
+          <div id="menu__logo">
+            <a href="{% url 'index' %}"id="menu__logo__odkaz">
+              <img
+                src="{% static 'evidence_pojisteni/logoM_3.svg' %}"
+                alt="Malé logo"
+                id="menu__logo__obrazek"
+              />
+            </a>
+
+            <a
+                href="{% url 'o_aplikaci' %}"
+                class="menu__tlacitko menu__tlacitko--sede
+                        menu__tlacitko--krajni--prave">
+              O&nbsp;aplikaci
+            </a>
+          </div>
+
+          <div id="menu__evidence">
+            <!--
+              Pokud je uživatel pojištěnec, zobrazí se mu
+            detail sebe sama místo stránky 'Pojištěnci',
+            jelikož žádného jiného pojištěnce než sebe
+            sama nemá právo vidět.
+              Pokud je uživatel administrátor, zobrazí se mu stránka
+            'Pojištěnci'.
+            -->
+            {% if user.pojistenec %}
+              <a
+                  href="{% url 'detail_pojistence' '[\'\']' user.pojistenec.pk|preved_na_seznam '-id' %}"
+                  class="menu__tlacitko menu__tlacitko--vinove
+                          menu__tlacitko--krajni--leve">
+                Pojištěnec
+              </a>
+            {% endif %}
+
+            {% if user.je_admin %}
+              <a
+                  href="{% url 'pojistenci_index' '-id' %}"
+                  class="menu__tlacitko menu__tlacitko--zelene
+                          menu__tlacitko--krajni--leve">
+                Pojištěnci
+              </a>
+            {% endif %}
+
+            {% if user.je_admin or user.pojistenec %}
+              <a
+                  href="{% url 'pojisteni_index' '-id' %}"
+                  class="menu__tlacitko menu__tlacitko--zelene">
+                Pojištění
+              </a>
+            {% endif %}
+
+            {% if user.je_admin or user.pojistenec %}
+              <a
+                  href="{% url 'udalosti_index' '-id' %}"
+                  class="menu__tlacitko menu__tlacitko--zelene
+                          menu__tlacitko--krajni--prave">
+                Události
+              </a>
+            {% endif %}
+          </div>
+
+          <div id="menu__uzivatel">
+            {% if not user.is_authenticated %}
+              <a
+                  href="{% url 'prihlasit_uzivatele' %}"
+                  class="menu__tlacitko menu__tlacitko--zelene
+                          menu__tlacitko--krajni--leve
+                          menu__tlacitko__uzivatel">
+                Přihlásit se
+              </a>
+            {% endif %}
+
+            <!--
+              Pokud je uživatel přihlášen, zobrazí se mu
+            v tlačítku 'Odhlásit se' také jeho email
+            a informace, zda je přihlášen jako
+            administrátor nebo pojištěnec.
+            -->
+            {% if user.is_authenticated %}
+              <a
+                  href="{% url 'odhlasit_uzivatele' %}"
+                  class="menu__tlacitko menu__tlacitko--vinove
+                          menu__tlacitko--krajni--leve
+                          menu__tlacitko__uzivatel">
+                Odhlásit se ({{ user.email }},
+                {% if user.je_admin %}
+                    admin)
+                {% elif user.pojistenec %}
+                    pojištěnec)
+                {% else %}
+                    práva nepřiřazena)
+                {% endif %}
+              </a>
+            {% endif %}
+          </div>
+
+        </nav>
+
+        <!-- div zprávy -->
+        <div>
+          {% if messages %}
+            {% for zprava in messages %}
+              {% if zprava.tags == "error" %}
+                <div class="zprava" id="zprava--chyba">
+                  Error: {{ zprava }}
+                </div>
+
+              {% elif zprava.tags == "info" %}
+                <div class="zprava" id="zprava--info">
+                  Zpráva: {{ zprava }}
+                </div>
+
+              {% elif zprava.tags == "success" %}
+                <div class="zprava" id="zprava--uspech">
+                  Zpráva: {{ zprava }}
+                </div>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </div>
+      </header>
+
+      <section class="sablona__section">
+        {% block content %}
+
+        {% endblock %}
+      </section>
+    </div>
+
+    <footer class="sablona__footer">
+      <div id='paticka'>
+        <div id='paticka__loga'>
+          <a
+              href="https://www.python.org/"
+              class="paticka__loga__odkaz">
+            <img
+                src="{% static 'evidence_pojisteni/python.svg' %}"
+                alt="Python"
+                class="paticka__loga__obrazek"
+            />
+          </a>
+
+          <a
+              href="https://www.w3.org/html/"
+              class="paticka__loga__odkaz">
+            <img
+                src="{% static 'evidence_pojisteni/html.svg' %}"
+                alt="HTML"
+                class="paticka__loga__obrazek"
+            />
+          </a>
+
+          <a
+              href="https://www.w3.org/Style/CSS/"
+              class="paticka__loga__odkaz">
+            <img
+                src="{% static 'evidence_pojisteni/css.svg' %}"
+                alt="CSS"
+                class="paticka__loga__obrazek"
+            />
+          </a>
+
+          <a
+              href="https://www.djangoproject.com/"
+              class="paticka__loga__odkaz">
+            <img
+                src="{% static 'evidence_pojisteni/django.svg' %}"
+                alt="Django"
+                class="paticka__loga__obrazek"
+            />
+          </a>
+
+          <a
+              href="https://getbootstrap.com/"
+              class="paticka__loga__odkaz">
+            <img
+                src="{% static 'evidence_pojisteni/bootstrap.svg' %}"
+                alt="Bootstrap"
+                class="paticka__loga__obrazek"
+            />
+          </a>
+
+          <a
+              href="https://www.itnetwork.cz/"
+              class="paticka__loga__odkaz">
+            <img
+                src="{% static 'evidence_pojisteni/itnetwork.svg' %}"
+                alt="Itnetwork"
+                class="paticka__loga__obrazek"
+            />
+          </a>
+        </div>
+        <div id="paticka__podpis">
+          <img
+              src="{% static 'evidence_pojisteni/podpis3.svg' %}"
+              alt="Podpis"
+              id="paticka__podpis__obrazek"
+              class=""
+          />
+        </div>
+      </div>
+    </footer>
+  </body>
+
+  <!--
+    Pro práci se statickým souborem (obrázek pozadí) je zde ostylování
+  pozadí elementu 'body' v HTML, neboď v CSS souborech nejde pracovat
+  se soubory 'static' frameworku DJANGO.
+  -->
+  <style>
+    .body{
+      background-image: url(
+        "{% static 'evidence_pojisteni/pozadi_1.svg' %}"
+      );
+    }
+  </style>
+</html>

@@ -1,0 +1,177 @@
+<!-- Stránka 'Pojištěnci' s tabulkou všech pojištěnců. -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% extends "sablona.html" %}
+    {% block content %}
+    <header class="sablona__section__header">
+      <h1>Pojištěnci</h1>
+    </header>
+
+    <section class="sablona__section__section">
+      <a
+          href="{% url 'novy_pojistenec' adresy_presmerovani %}"
+          class="btn btn-primary section__tlacitko">
+        Nový pojištěnec
+      </a>
+
+      <!--
+        Responzivní Bootstrap tabulka s výčtem všech pojištěnců.
+      V hlavičce tabulky najdeme HTML objekt 'select', který
+      u každého sloupečku obsahuje možnost jeho řazení podle jeho
+      hodnot a to buď sestupně nebo vzestupně.
+        Je zde využit JavaScript, díky kterému odešleme formulář
+      s vybranou možností ihned po kliknutí na tuto možnost
+      ('this.form.submit()').
+        Pokud je některá z možností řazení tabulky již uložená jako
+      COOKIE, načteme ji a seřadíme tabulku tak, jak si uživatel
+      navolil při poslední návštěvě stránky.
+      -->
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">
+                <form method="POST">
+                  {% csrf_token %}
+                  id
+                  <select onchange="this.form.submit()" name="seradit">
+                    <option value=""></option>
+                    <option
+                        value="id"
+                        {% if request.COOKIES.seradit_pojistenci_index == "id" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-id"
+                        {% if request.COOKIES.seradit_pojistenci_index == "-id" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </form>
+              </th>
+
+              <th scope="col">
+                <form method="POST">
+                  {% csrf_token %}
+                  Jméno
+                  <select onchange="this.form.submit()" name="seradit">
+                    <option value=""></option>
+                    <option
+                        value="prijmeni"
+                        {% if request.COOKIES.seradit_pojistenci_index == "prijmeni" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-prijmeni"
+                        {% if request.COOKIES.seradit_pojistenci_index == "-prijmeni" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </form>
+              </th>
+
+              <th scope="col">
+                <form method="POST">
+                  {% csrf_token %}
+                  Bydliště
+                  <select onchange="this.form.submit()" name="seradit">
+                    <option value=""></option>
+                    <option
+                        value="mesto"
+                        {% if request.COOKIES.seradit_pojistenci_index == "mesto" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-mesto"
+                        {% if request.COOKIES.seradit_pojistenci_index == "-mesto" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </form>
+              </th>
+
+              <th scope="col">Možnosti</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Tabulku naplníme daty. -->
+            {% for pojistenec in stranka_obj %}
+            <tr>
+              <td>
+                <form method="POST">
+                  {% csrf_token %}
+                  <button
+                      name="detail_pojistence"
+                      value="{{ pojistenec.pk }}"
+                      class="btn btn-info section__tlacitko">
+                    {{ pojistenec.id }}
+                  </button>
+                </form>
+              </td>
+
+              <td>
+                  {{ pojistenec.prijmeni }}
+                  {{ pojistenec.jmeno }}
+              </td>
+
+              <td>{{ pojistenec.mesto }}, {{ pojistenec.ulice }}</td>
+
+              <td>
+                <form method="POST">
+                  {% csrf_token %}
+                  <div class="tlacitka_mezery">
+                    <!--
+                      div odstranit objekt a potvrzovací tlačítko
+                    -->
+                    <div>
+                      <input
+                          type="checkbox"
+                          class="odstranit_potvrzeni"
+                          name="odstranit_potvrzeni"
+                      >
+                      <button
+                          name="odstranit"
+                          value="{{ pojistenec.pk }}"
+                          class="btn btn-danger section__tlacitko">
+                        Odstranit
+                      </button>
+                    </div>
+
+                    <button
+                        name="upravit_pojistence"
+                        value="{{ pojistenec.pk }}"
+                        class="btn btn-zelene section__tlacitko">
+                      Upravit
+                    </button>
+                  </div>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Vloží pod tabulku objekt stránkovače. -->
+      {% include 'strankovani.html' %}
+    </section>
+    {% endblock %}
+  </body>
+</html>

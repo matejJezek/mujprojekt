@@ -1,0 +1,112 @@
+<!-- Detail události -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% extends 'sablona.html' %}
+    {% block content %}
+      <header class="sablona__section__header">
+        <h1>Detail události {{ udalost.id }}</h1>
+      </header>
+
+      <section class="sablona__section__section">
+        <!-- Responzivní Bootstrap tabulka s detaily události. -->
+        <div class="table-responsive">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row">id události</th>
+                <td>{{ udalost.id }}</td>
+              </tr>
+              <tr>
+                <th scope="row">id pojištění</th>
+                <td>
+                  <form method="POST">
+                    {% csrf_token %}
+                    <button
+                        name="detail_pojisteni"
+                        value="{{ udalost.pojisteni.pk }}"
+                        class="btn btn-info section__tlacitko">
+                        {{ udalost.pojisteni.id }}
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">id pojištěnce</th>
+                <td>
+                  <form method="POST">
+                    {% csrf_token %}
+                    <button
+                        name="detail_pojistence"
+                        value="{{ udalost.pojistenec.pk }}"
+                        class="btn btn-info section__tlacitko">
+                        {{ udalost.pojistenec.id }}
+                    </button>
+                  </form>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">Předmět události</th>
+                <td>{{ udalost.predmet }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Částka</th>
+                <td>{{ udalost.castka }} Kč</td>
+              </tr>
+              <tr>
+                <th scope="row">Datum</th>
+                <td>{{ datum }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Popis</th>
+                <td>{{ udalost.popis }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!--
+          Formulář pro práci s událostí obsahuje možnosti 'zpět',
+        'odtranit' a 'upravit'.
+        -->
+        <form method="post">
+          <div class="tlacitka_na_okraji">
+            {% csrf_token %}
+            <div>
+              <button name="zpet" class="btn btn-secondary section__tlacitko">
+                Zpět
+              </button>
+            </div>
+            {% if user.je_admin %}
+
+            <div class="tlacitka_mezery">
+              <!-- div odstranit objekt a potvrzovací tlačítko -->
+              <div>
+                <input
+                    type="checkbox"
+                    class="odstranit_potvrzeni"
+                    name="odstranit_potvrzeni"
+                >
+                <button
+                    name="odstranit_udalost"
+                    class="btn btn-danger section__tlacitko">
+                  Odstranit událost
+                </button>
+              </div>
+              <button
+                  name="upravit_udalost"
+                  class="btn btn-zelene section__tlacitko">
+                Upravit událost
+              </button>
+            </div>
+          </div>
+          {% endif %}
+        </form>
+        <br>
+      </section>
+    {% endblock %}
+  </body>
+</html>

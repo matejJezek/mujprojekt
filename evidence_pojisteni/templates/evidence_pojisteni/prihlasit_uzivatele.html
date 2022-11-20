@@ -1,0 +1,44 @@
+<!-- Stránka pro přihlášení uživatele. -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8">
+  </head>
+  <body>
+    {% extends 'sablona.html' %}
+    <!-- 
+      'django-crispy-forms' pro rychlé nastylování formuláře pomocí
+    frameworku 'Bootstrap'.
+    -->
+    {% load crispy_forms_tags %}
+    {% block content %}
+      <header class="sablona__section__header">
+        <h1>Přihlásit se</h1>
+      </header>
+
+      <section class="sablona__section__section">
+        <form method="POST">
+          {% csrf_token %}
+          <!--
+            Vužití 'django-crispy-forms' pro stylování formuláře.
+          -->
+          {{ formular|crispy }}
+          <input class="btn btn-primary section__tlacitko" type="submit" />
+        </form>
+        <br>
+        <p>
+          Přihlášením se do aplikace souhlasíte s použitím
+        <strong>COOKIES</strong>. (Seřadit tabulku podle)
+        </p>
+
+        <p>
+          Pro ideální funkčnost aplikace je třeba mít povolen 
+        <strong>JavaScript</strong>. (Seřadit tabulku podle
+        a stránkování výčtu objektů v tabulce)
+        </p>
+
+        <br>
+      </section>
+    {% endblock %}
+  </body>
+</html>

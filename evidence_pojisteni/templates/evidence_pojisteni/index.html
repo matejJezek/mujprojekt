@@ -1,0 +1,95 @@
+<!-- Úvodní stránka aplikace -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body class="body do_bloku">
+    {% extends "sablona.html" %}
+    {% load static %}
+    {% block content %}
+      <section class="sablona__section__section">
+        <div class="text-center">
+          <img
+              src="{% static 'evidence_pojisteni/logoV_2.svg' %}"
+              alt="Velké logo"
+              class="img-fluid"
+              id='logo--velke'
+          />
+        </div>
+
+        <p>
+          Vážení návštěvníci, budoucí kolegové,
+        </p>
+
+        <p>
+          mé jméno je <strong>Matěj Ježek</strong> a toužím dělat něco
+        smysluplného, užitečného a s viditelným výsledkem. Mou
+        dosavadní životní cestu doprovázela informatika, přičemž
+        v programování jsem nebyl úplně mimo, ba dokonce mě i bavilo
+        a naplňovalo.
+        </p>
+
+        <p>
+          Webová aplikace <strong>Pojišťovna Ježek</strong> má za cíl
+        ukázat, že:
+        </p>
+
+        <ul>
+          <li>
+            mým koníčkem je <em>programování</em>,
+          </li>
+          <li>
+            mám schopnost <em>logického, analytického a algoritmického
+          myšlení</em>,
+          </li>
+          <li>
+            jsem schopen vytvořit <em>funkční projekt</em>, učit se novým
+            <em>nástrojům a postupům</em>,
+          </li>
+          <li>
+            jsem schopen pracovat pomocí <em>dokumentace</em>, vytvořit
+            <em>kód vlastní</em> nebo upravit <em>kód převzatý</em>,
+          </li>
+          <li>
+            jsem <em>pečlivý, samostatný</em> a dotahuji <em>věci do konce</em>,
+          </li>
+          <li>
+            ovládám <em>anglický jazyk</em> na mírně pokročilé úrovni.
+          </li>
+        </ul>
+
+        <p>
+          K vytvoření aplikace <strong>bylo použito</strong>:
+        </p>
+
+        <ul>
+          <li>
+            framewoky <strong>Django</strong>
+            a <strong>Bootsrap</strong>,
+          </li>
+
+          <li>jazyky <strong>Python</strong>,
+            <strong>HTML</strong>,
+            <strong>CSS</strong>
+            a trochu  <strong>SQL</strong>,
+          </li>
+
+          <li>
+            databáze <strong>SQLite</strong>,
+          </li>
+
+          <li>
+            editor zdrojového kódu
+            <strong>Visual Studio Code</strong>.
+          </li>
+        </ul>
+
+        <p>
+          Zvláštní poděkování patří týmu <strong>itnetwork.cz</strong>
+        za poskytnuté výukové materiály a školení.
+        </p>
+      </section>
+    {% endblock %}
+  </body>
+</html>

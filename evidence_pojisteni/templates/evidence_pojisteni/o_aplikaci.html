@@ -1,0 +1,51 @@
+<!-- Stránka 'O aplikaci' -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body class="body do_bloku">
+    {% extends "sablona.html" %}
+    {% load static %}
+    {% block content %}
+      <header class="sablona__section__header">
+        <h1>O aplikaci</h1>
+      </header>
+
+      <section class="sablona__section__section">
+        <p>
+          Protože se jedná o <strong>pojišťovací aplikaci</strong>,
+        nepředpokládám zde možnost registrace uživatele.
+        </p>
+
+        <p>
+          Pro <strong>přihlášení</strong> se do role administrátora
+        (pracovníka pojišťovny) zadejte přihlašovací údaje (platí i pro přihlášení se do administrace databáze):
+        </p>
+
+        <p>
+          <b>email</b>: admin@pj.cz </br>
+          <b>heslo</b>: admin
+        </p>
+
+        <p>
+          <strong>Účet administrátora</strong> lze vytvořit pouze
+        v administraci dabáze.
+          <strong>Účet pojištěnce</strong> se vytvoří automaticky po
+        vytvoření nového pojištěnce s přihlašovacími údaji:
+        </p>
+
+        <p>
+          <b>email</b>: email pojištěnce</br>
+          <b>heslo</b>: id pojištěnce
+        </p>
+
+        <p>
+          Možnost vytvořit <strong>nového pojištěnce</strong> získáte
+        po přihlášení se do aplikace v roli administrátora v sekci
+        <strong>Pojištěnci</strong>.
+        </p>
+      </section>
+    {% endblock %}
+  </body>
+</html>

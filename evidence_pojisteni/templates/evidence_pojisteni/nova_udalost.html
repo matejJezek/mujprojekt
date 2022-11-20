@@ -1,0 +1,48 @@
+<!-- Stránka pro tvorbu nové události nebo úpravu již vytvořené. -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% extends 'sablona.html' %}
+    <!-- 
+      'django-crispy-forms' pro rychlé nastylování formuláře pomocí
+    frameworku 'Bootstrap'.
+    -->
+    {% load crispy_forms_tags %}
+    {% block content %}
+
+      <header class="sablona__section__header">
+        <!-- 
+          Rozlišujeme nadpis stránky pro novou událost a úpravu
+        událosi.
+        -->
+        {% if status == 'nova' %}
+          <h1>Nová událost</h1>
+        {% else %}
+          <h1>Upravit událost {{ pk }}</h1>
+        {% endif %}
+      </header>
+
+      <section class="sablona__section__section">
+        <form method="POST">
+          {% csrf_token %}
+          <!--
+            Vužití 'django-crispy-forms' pro stylování formuláře.
+          -->
+          {{ formular|crispy }}
+          <input type="submit" class="btn btn-primary section__tlacitko" />
+        </form>
+
+        <form method="POST">
+          {% csrf_token %}
+          <button name="zpet" class="btn btn-secondary section__tlacitko">
+            Zpět
+          </button>
+        </form>
+        <br>
+      </section>
+    {% endblock %}
+  </body>
+</html>

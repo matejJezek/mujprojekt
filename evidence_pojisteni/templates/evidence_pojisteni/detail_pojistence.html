@@ -1,0 +1,279 @@
+<!-- Deatil pojištěnce -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% extends 'sablona.html' %}
+    {% block content %}
+    <header class="sablona__section__header">
+      <h1>Detail pojištěnce {{ pojistenec.id }}</h1>
+    </header>
+
+    <section class="sablona__section__section">
+      <!--
+        Responzivní Bootstrap tabulka s detaily pojištěnce.
+      -->
+      <div class="table-responsive">
+        <table class="table">
+          <tbody>
+            <tr>
+              <th scope="row">Fotografie</th>
+              <td>
+                {% if pojistenec.fotografie %}
+                  <img
+                      id='fotografie'
+                      src="{{ pojistenec.fotografie.url }}"
+                      alt="Profilová fotografie"
+                  >
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">id</th>
+              <td>{{ pojistenec.id }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Jméno a příjmení</th>
+              <td>{{ pojistenec.jmeno }} {{ pojistenec.prijmeni }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Ulice a číslo popisné</th>
+              <td>{{ pojistenec.ulice }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Město</th>
+              <td>{{ pojistenec.mesto }}</td>
+            </tr>
+            <tr>
+              <th scope="row">PSČ</th>
+              <td>{{ pojistenec.psc }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Telefon</th>
+              <td>{{ pojistenec.telefon }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Email</th>
+              <td>{{ pojistenec.email }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!--
+        Formulář pro práci s pojištěncem obsahuje možnosti 'odtranit'
+      a 'upravit'.
+      -->
+      <form method="post">
+        {% csrf_token %}
+        <div class="tlacitka_mezery">
+          {% if user.je_admin %}
+            <!-- div odstranit objekt a potvrzovací tlačítko -->
+            <div>
+              <input
+                  type="checkbox"
+                  class="odstranit_potvrzeni"
+                  name="odstranit_potvrzeni"
+              >
+              <button
+                  name="odstranit_pojistence"
+                  class="btn btn-danger section__tlacitko">
+                Odstranit pojištěnce
+              </button>
+            </div>
+          {% endif %}
+
+          <button
+              name="upravit_pojistence"
+              class="btn btn-zelene section__tlacitko">
+            Upravit pojištěnce
+          </button>
+        </div>
+      </form>
+
+      <h2>Sjednaná pojištění</h2>
+
+      <!--
+        Responzivní Bootstrap tabulka s výčtem pojištění daného
+      pojištěnce.
+      V hlavičce tabulky najdeme HTML objekt 'select', který u každého
+      sloupečku obsahuje možnost jeho řazení podle jeho hodnot a to buď
+      sestupně nebo vzestupně.
+        Je zde využit JavaScript, díky kterému odešleme formulář
+      s vybranou možností ihned po kliknutí na tuto možnost
+      ('this.form.submit()').
+        Pokud je některá z možností řazení tabulky již uložená jako
+      COOKIE, načteme ji a seřadíme tabulku tak, jak si uživatel
+      navolil při poslední návštěvě stránky.
+      -->
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">
+                <form method="POST">
+                  {% csrf_token %}
+                  id
+                  <select onchange="this.form.submit()" name="seradit">
+                    <option value=""></option>
+                    <option
+                        value="id"
+                        {% if request.COOKIES.seradit_detail_pojistence__pojisteni == "id" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-id"
+                        {% if request.COOKIES.seradit_detail_pojistence__pojisteni == "-id" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </form>
+              </th>
+
+              <th scope="col">
+                <form method="POST">
+                  {% csrf_token %}
+                  Pojištění
+                  <select onchange="this.form.submit()" name="seradit">
+                    <option value=""></option>
+                    <option
+                        value="typ_id"
+                        {% if request.COOKIES.seradit_detail_pojistence__pojisteni == "typ_id" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-typ_id"
+                        {% if request.COOKIES.seradit_detail_pojistence__pojisteni == "-typ_id" %}
+                          selected {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </form>
+              </th>
+
+              <th scope="col">
+                <form method="POST">
+                  {% csrf_token %}
+                  Částka
+                  <select onchange="this.form.submit()" name="seradit">
+                    <option value=""></option>
+                    <option
+                        value="castka"
+                        {% if request.COOKIES.seradit_detail_pojistence__pojisteni == "castka" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-castka"
+                        {% if request.COOKIES.seradit_detail_pojistence__pojisteni == "-castka" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </form>
+              </th>
+              <!--
+                Zobrazí se pouze, pokud je uživatel administrátor
+              -->
+              {% if user.je_admin %}
+                <th scope="col">Možnosti</th>
+              {% endif %}
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Tabulku naplníme daty. -->
+            {% for pojisteni in stranka_obj %}
+              <tr>
+                <td>
+                  <form method="POST">
+                    {% csrf_token %}
+                    <button
+                        name="detail_pojisteni"
+                        value="{{ pojisteni.pk }}"
+                        class="btn btn-info section__tlacitko">
+                  {{ pojisteni.id }}
+                    </button>
+                  </form>
+                </td>
+
+                <td>{{ pojisteni.typ.typ }}</td>
+                
+                <td>{{ pojisteni.castka }} Kč</td>
+
+                <!--
+                  Pokud je uživatel administrátor, zobrazí se mu
+                u každé položky možnosti 'odstranit' a 'upravit'.
+                -->
+                {% if user.je_admin %}
+                  <td>
+                    <form method="post">
+                      {% csrf_token %}
+                      <div class="tlacitka_mezery">
+                        <!--
+                          div odstranit objekt a potvrzovací
+                        tlačítko
+                        -->
+                        <div>
+                          <input
+                              type="checkbox"
+                              class="odstranit_potvrzeni"
+                              name="odstranit_potvrzeni"
+                          >
+                          <button
+                              name="odstranit_pojisteni"
+                              class="btn btn-danger section__tlacitko"
+                              value="{{ pojisteni.pk }}">
+                            Odstranit
+                          </button>
+                        </div>
+                        <button
+                            name="upravit_pojisteni"
+                            class="btn btn-zelene section__tlacitko"
+                            value="{{ pojisteni.pk }}">
+                          Upravit
+                        </button>
+                      </div>
+                    </form>
+                  </td>
+                {% endif %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Vloží pod tabulku objekt stránkovače. -->
+      {% include 'strankovani.html' %}
+
+      <!-- Formulář s možnostmi 'zpět' a 'přidat pojištění' -->
+      <form method="post">
+        {% csrf_token %}
+        <div class="">
+          <button name="zpet" class="btn btn-secondary section__tlacitko">
+            Zpět
+          </button>
+          {% if user.je_admin %}
+            <button
+                name="pridat_pojisteni"
+                class="btn btn-primary section__tlacitko">
+              Přidat pojištění
+            </button>
+          {% endif %}
+        </div>
+      </form>
+      <br>
+    </section>
+    {% endblock %}
+  </body>
+</html>

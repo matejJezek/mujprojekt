@@ -1,0 +1,101 @@
+<!-- stránkovač -->
+<nav aria-label="...">
+  <ul class="pagination">
+    <!--
+      Pokud existuje stránka před aktivní stránkou, aktivují se
+    ovládací prvky 'první' a 'předchozí' stránka.
+    -->
+    {% if stranka_obj.has_previous %}
+      <li class="page-item">
+        <a href="?page=1" class="page-link">&laquo;</a>
+      </li>
+      <li class="page-item">
+        <a
+            href="?page={{ stranka_obj.previous_page_number }}"
+            class="page-link">Předchozí
+        </a>
+      </li>
+    <!-- Pokud ne, budou tyto ovládací prvky pasivní. -->
+    {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">&laquo;</span>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">Předchozí</span>
+      </li>
+    {% endif %}
+
+    <!--
+      Cyklus ve stránkovači zobrazí všechny dostupné stránky
+      do selectu a pomocí JavaScriptu přesměruje po kliknutí
+      na požadovanou stránku.
+    -->
+    {% if stranka_obj.has_previous or stranka_obj.has_next %}
+      <select
+          class="pagination__stranky--aktivni"
+          name="stranky"
+          onchange="location = this.value;">
+    {% else %}
+      <select
+        class="pagination__stranky--neaktivni"
+        name="stranky"
+        disabled>
+    {% endif %}
+
+      {% for stranka in stranka_obj.paginator.page_range %}
+        <!--
+          Stránku na které se uživatel nachází označíme jako
+        'selected'. Odkaz na ní bude pasivní.
+        -->
+        {% if stranka == stranka_obj.number %}
+          <option value="" selected>{{ stranka_obj.number }}</option>
+        <!--
+          <li class="page-item active">
+            <span class="page-link">{{ stranka_obj.number }}</span>
+          </li>
+        -->
+        <!--
+          Ostatní stránky budou mít aktivní odkazy.
+        -->
+        {% else %}
+          <option value="?page={{ stranka }}">
+              {{ stranka }}
+          </option>
+        <!--
+          <li class="page-item">
+            <a class="page-link" href="?page={{ stranka }}">{{ stranka }}</a>
+          </li>
+        -->
+        {% endif %}
+      {% endfor %}
+    </select>
+
+    <!--
+      Pokud existuje stránka za aktivní stránkou, aktivují se
+    ovládací prvky 'další' a 'poslední' stránka.
+    -->
+    {% if stranka_obj.has_next %}
+      <li class="page-item ">
+        <a class="page-link" href="?page={{ stranka_obj.next_page_number }}">
+          Další
+        </a>
+      </li>
+      <li class="page-item">
+        <a
+            href="?page={{ stranka_obj.paginator.num_pages }}"
+            class="page-link">
+          &raquo;
+        </a>
+      </li>
+      <!-- Pokud ne, budou tyto ovládací prvky pasivní. -->
+      {% else %}
+      <li class="page-item disabled">
+        <span class="page-link">Další</span>
+      </li>
+      <li class="page-item disabled">
+        <span class="page-link">&raquo;</span>
+      </li>
+    {% endif %}
+
+  </ul>
+</nav>
