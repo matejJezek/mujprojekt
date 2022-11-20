@@ -1,5 +1,5 @@
 # mujprojekt
-Potřeba nainstalovat:
-    - Djanfo
-    - django-crispy-forms
-    - crispy-bootstrap5
+potřeba nainstalovat:
+- Django
+- django-crispy-forms
+- crispy-bootstrap5
