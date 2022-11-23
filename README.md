@@ -1,5 +1,6 @@
 # mujprojekt
-Nasazená aplikace na serveru: pojistovnajezek.cz
+Nasazená aplikace na serveru:
+- pojistovnajezek.cz
 
 Pro spuštění lokálně je potřeba nainstalovat:
 - Django
