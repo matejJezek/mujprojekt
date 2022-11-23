@@ -30,17 +30,25 @@ urlpatterns = [
         'admin/doc/',
         include('django.contrib.admindocs.urls')
     ),
+
     # Cesta ke správě databáze.
     path(
         'admin/',
         admin.site.urls
     ),
+
     # Cesta k aplikaci 'evidence_pojisteni' (neboli k modulu, který
     # konfiguruje její URL cesty).
     path(
-        'evidence_pojisteni/',
+        '',
         include('evidence_pojisteni.urls')
     ),
+
+    #     path(
+    #     'http://pojistovna-jezek-5973.rostiapp.cz/',
+    #     include('evidence_pojisteni.urls')
+    # ),
+
     re_path(
         r'^favicon\.ico$',
         favicon_view

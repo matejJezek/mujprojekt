@@ -82,7 +82,7 @@ html{
 .zprava{
     max-width: 960px;
     border-bottom: 2px solid black;
-    padding: 5px;
+    padding: 5px 15px;
 }
 #zprava--chyba{
     color:rgb(167, 0, 0);
@@ -105,7 +105,7 @@ html{
     margin-bottom: 20px;
 }
 .sablona__section__section{
-    padding: 5px 5px;
+    padding: 5px 15px;
 }
 h1, h2, th, strong, b{
     color: #640000ff;

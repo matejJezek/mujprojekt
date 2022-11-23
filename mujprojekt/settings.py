@@ -28,8 +28,7 @@ SECRET_KEY = 'django-insecure-2j^u=w%67*zv@!qh#x@a40g2xm*jft-*n)o^ekp60q@ms%msmc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['pojistovna-jezek-5973.rostiapp.cz', 'pojistovnajezek.cz', 'www.pojistovnajezek.cz', 'localhost']
 
 # Application definition
 
@@ -138,7 +137,7 @@ STATIC_URL = '/static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Cesta ke statickým souborům (obrázky, styly, skripty, ...). 
-STATIC_ROOT = os.path.join(BASE_DIR,'static/')
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
 
 # Specifikace vlastního uživatelského modelu.
 AUTH_USER_MODEL = 'evidence_pojisteni.Uzivatel'
