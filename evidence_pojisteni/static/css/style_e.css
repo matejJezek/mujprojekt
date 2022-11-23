@@ -119,6 +119,15 @@ h1{
     clip-path: polygon(0 0, 100% 0%, 90% 100%, 0% 100%);
     padding: 10px 30px;
 }
+h2{
+    color: white;
+    background:#640000ff;
+    clip-path: polygon(0 0, 100% 0%, 90% 100%, 0% 100%);
+    padding: 10px 15px;
+}
+.nadpis_pod_objektu{
+    margin-top: 20px;
+}
 .tlacitka_na_okraji{
     display: flex;
     flex-wrap: wrap;
