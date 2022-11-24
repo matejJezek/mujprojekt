@@ -61,3 +61,6 @@ if settings.DEBUG:
         settings.MEDIA_URL,
         document_root=settings.MEDIA_ROOT
     )
+
+# Přesměrování z neexistující URL adresy aplikace.
+handler404 = 'evidence_pojisteni.views.error_404'

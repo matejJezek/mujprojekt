@@ -527,6 +527,15 @@ požadovanou stránku.
 # -------------------------------- V I E W S ---------------------------------
 # ----------------------------------------------------------------------------
 
+def error_404(request, exception):
+    """
+    Zavolá se v případě, že uživatel zadá neexistující
+URL adresu aplikace.
+    """
+
+    adresa_stranky = "error_404.html"
+    return render(request, adresa_stranky)
+    
 def index(request: object) -> object:
     """
     Přesměruje na úvodní stránku aplikace.
