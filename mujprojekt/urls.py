@@ -64,3 +64,6 @@ if settings.DEBUG:
 
 # Přesměrování z neexistující URL adresy aplikace.
 handler404 = 'evidence_pojisteni.views.chyba_404'
+
+# Přesměrování při interní chybě aplikace.
+handler500 = 'evidence_pojisteni.views.chyba_500'

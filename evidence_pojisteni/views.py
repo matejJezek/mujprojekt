@@ -535,6 +535,15 @@ URL adresu aplikace.
 
     adresa_stranky = "chyba_404.html"
     return render(request, adresa_stranky)
+
+def chyba_500(request):
+    """
+    Zavolá se v případě, že uživatel zadá neexistující
+URL adresu aplikace.
+    """
+
+    adresa_stranky = "chyba_500.html"
+    return render(request, adresa_stranky)
     
 def index(request: object) -> object:
     """
@@ -634,7 +643,7 @@ class Pojistenci_index(generic.ListView):
                         except:
                             messages.error(
                                 request, """Nepodařilo se odstranit fotografii
-                                pojištěnce" ze složky."""
+                                pojištěnce ze složky."""
                             )
 
                         pojistenec.delete()
@@ -854,7 +863,7 @@ i stejná stránka jako u tvorby nového pojištěnce.
                     except:
                         messages.error(
                             request, """Nepodařilo se odstranit fotografii
-                            pojištěnce" ze složky."""
+                            pojištěnce ze složky."""
                         )
 
                 # Pokud je formulář v pořádku, objektu upravovaného
@@ -1055,7 +1064,7 @@ class Detail_pojistence(generic.DetailView):
                     except:
                         messages.error(
                             request, """Nepodařilo se odstranit fotografii
-                            pojištěnce" ze složky."""
+                            pojištěnce ze složky."""
                         )
                     pojistenec.delete()
 

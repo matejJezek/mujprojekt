@@ -1,0 +1,21 @@
+<!-- Stránka pro error 404 (neexistující URL aplikace) -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body class="body do_bloku">
+    {% extends "sablona.html" %}
+    {% block content %}
+      <header class="sablona__section__header">
+        <h1>Chyba 500</h1>
+      </header>
+
+      <section class="sablona__section__section">
+        <p>
+            Vyskytla se chyba aplikace, kontaktujte prosím jejího autora.
+        </p>
+      </section>
+    {% endblock %}
+  </body>
+</html>
