@@ -4,5 +4,6 @@ Nasazená aplikace na serveru:
 
 Pro spuštění lokálně je potřeba nainstalovat:
 - Django
+- pillow
 - django-crispy-forms
 - crispy-bootstrap5
