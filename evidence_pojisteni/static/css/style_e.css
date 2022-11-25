@@ -204,6 +204,9 @@ td{
     width: 20px;
     height: 20px;
 }
+.seradit_podle{
+    background: white;
+}
 .pagination{
     height: 2.3em;
     width: max-content;

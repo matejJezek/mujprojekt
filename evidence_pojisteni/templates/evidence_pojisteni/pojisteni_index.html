@@ -46,7 +46,7 @@ administrátor), pojištění příslušících přihlášenemu pojištěnci
                   <form method="POST">
                     {% csrf_token %}
                     id pojištění
-                    <select onchange="this.form.submit()" name="seradit">
+                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
                       <option value=""></option>
                       <option
                           value="id"
@@ -70,7 +70,7 @@ administrátor), pojištění příslušících přihlášenemu pojištěnci
                   <form method="POST">
                     {% csrf_token %}
                     id pojištěnce
-                    <select onchange="this.form.submit()" name="seradit">
+                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
                       <option value=""></option>
                       <option
                           value="pojistenec_id"
@@ -94,7 +94,7 @@ administrátor), pojištění příslušících přihlášenemu pojištěnci
                   <form method="POST">
                     {% csrf_token %}
                     Pojištění
-                    <select onchange="this.form.submit()" name="seradit">
+                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
                       <option value=""></option>
                       <option
                           value="typ_id"
@@ -118,7 +118,7 @@ administrátor), pojištění příslušících přihlášenemu pojištěnci
                   <form method="POST">
                     {% csrf_token %}
                     Částka
-                    <select onchange="this.form.submit()" name="seradit">
+                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
                       <option value=""></option>
                       <option
                           value="castka"

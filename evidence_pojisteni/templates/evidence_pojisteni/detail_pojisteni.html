@@ -112,7 +112,7 @@
                   <form method="POST">
                     {% csrf_token %}
                     id
-                    <select onchange="this.form.submit()" name="seradit">
+                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
                       <option value=""></option>
                       <option
                           value="id"
@@ -136,7 +136,7 @@
                   <form method="POST">
                     {% csrf_token %}
                     Událost
-                    <select onchange="this.form.submit()" name="seradit">
+                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
                       <option value=""></option>
                       <option
                           value="predmet"
@@ -160,7 +160,7 @@
                   <form method="POST">
                     {% csrf_token %}
                     Částka
-                    <select onchange="this.form.submit()" name="seradit">
+                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
                       <option value=""></option>
                       <option
                           value="castka"
