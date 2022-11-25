@@ -645,13 +645,23 @@ class Pojistenci_index(generic.ListView):
                         # Pokud se nám podaří načíst pojištěnce
                         # z databáze, odstraníme ho a odstraníme
                         # i jeho fotografii ze složky 'media/images/'.
-                        try:
-                            os.remove(pojistenec.fotografie.path)
-                        except:
-                            messages.error(
-                                request, """Nepodařilo se odstranit fotografii
-                                pojištěnce ze složky."""
-                            )
+                        #
+                        # Podmínka určuje, že zkusíme mazat fotografii
+                        # pouze, pokud je k dispozici.
+                        # pojistenec.fotografie != False z důvodu, že
+                        # vymazaná fotografie ze sekce 'Upravit' má
+                        # stále název 'False' a pro Django existuje jako
+                        # bool hodnota 'True'.
+                        if (pojistenec.fotografie 
+                            and pojistenec.fotografie != 'False'):
+
+                            try:
+                                os.remove(pojistenec.fotografie.path)
+                            except:
+                                messages.error(
+                                    request, """Nepodařilo se odstranit fotografii
+                                    pojištěnce ze složky."""
+                                )
 
                         pojistenec.delete()
                         messages.success(
@@ -864,7 +874,16 @@ i stejná stránka jako u tvorby nového pojištěnce.
                     formular.data['email'] = 'originalni_adresa@pj.cz'
 
                 # Pokud uživatel změnil fotografii, vymaže se stará.
-                if 'fotografie' in formular.changed_data:
+                #
+                # Podmínka určuje, že zkusíme mazat fotografii pouze,
+                # pokud je k dispozici.
+                # pojistenec.fotografie != False z důvodu, že vymazaná
+                # fotografie ze sekce 'Upravit' má stále název 'False'
+                # a pro Django existuje jako bool hodnota 'True'.
+                if ('fotografie' in formular.changed_data 
+                    and pojistenec.fotografie
+                    and pojistenec.fotografie != 'False'):
+
                     try:
                         os.remove(pojistenec.fotografie.path)
                     except:
@@ -1066,13 +1085,23 @@ class Detail_pojistence(generic.DetailView):
                     # Pokud se nám podaří načíst pojištěnce z databáze,
                     # odstraníme ho a odstraníme i jeho fotografii ze
                     # složky 'media/images/'.
-                    try:
-                        os.remove(pojistenec.fotografie.path)
-                    except:
-                        messages.error(
-                            request, """Nepodařilo se odstranit fotografii
-                            pojištěnce ze složky."""
-                        )
+                    #
+                    # Podmínka určuje, že zkusíme mazat fotografii
+                    # pouze, pokud je k dispozici.
+                    # pojistenec.fotografie != False z důvodu, že
+                    # vymazaná fotografie ze sekce 'Upravit' má
+                    # stále název 'False' a pro Django existuje jako
+                    # bool hodnota 'True'.
+                    if (pojistenec.fotografie 
+                        and pojistenec.fotografie != 'False'):
+
+                        try:
+                            os.remove(pojistenec.fotografie.path)
+                        except:
+                            messages.error(
+                                request, """Nepodařilo se odstranit fotografii
+                                pojištěnce ze složky."""
+                            )
                     pojistenec.delete()
 
                     messages.success(
