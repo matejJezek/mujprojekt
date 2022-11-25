@@ -62,6 +62,9 @@ if settings.DEBUG:
         document_root=settings.MEDIA_ROOT
     )
 
+# Přesměrování při chybě přihlášení (CSRF_TOKEN).
+# handler403 = 'evidence_pojisteni.views.chyba_403'
+
 # Přesměrování z neexistující URL adresy aplikace.
 handler404 = 'evidence_pojisteni.views.chyba_404'
 

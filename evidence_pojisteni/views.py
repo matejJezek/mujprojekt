@@ -527,6 +527,14 @@ požadovanou stránku.
 # -------------------------------- V I E W S ---------------------------------
 # ----------------------------------------------------------------------------
 
+def chyba_403(request, reason=""):
+    """
+    Zavolá se v případě, že dojde k chybě přihlášení (CSRF_TOKEN).
+    """
+
+    adresa_stranky = "chyba_403.html"
+    return render(request, adresa_stranky)
+
 def chyba_404(request, exception):
     """
     Zavolá se v případě, že uživatel zadá neexistující
@@ -538,8 +546,7 @@ URL adresu aplikace.
 
 def chyba_500(request):
     """
-    Zavolá se v případě, že uživatel zadá neexistující
-URL adresu aplikace.
+    Zavolá se v případě, že nastane interní chyba aplikace.
     """
 
     adresa_stranky = "chyba_500.html"

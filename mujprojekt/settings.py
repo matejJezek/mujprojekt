@@ -28,6 +28,9 @@ SECRET_KEY = 'django-insecure-2j^u=w%67*zv@!qh#x@a40g2xm*jft-*n)o^ekp60q@ms%msmc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+# Přesměrování při chybě přihlášení (CSRF_TOKEN).
+CSRF_FAILURE_VIEW = 'evidence_pojisteni.views.chyba_403'
+
 ALLOWED_HOSTS = ['pojistovna-jezek-5973.rostiapp.cz', 'pojistovnajezek.cz', 'www.pojistovnajezek.cz', 'localhost']
 
 # Application definition
