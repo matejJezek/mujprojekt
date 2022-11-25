@@ -104,149 +104,151 @@
         jako COOKIE, načteme ji a seřadíme tabulku tak, jak si
         uživatel navolil při poslední návštěvě stránky.
         -->
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">
-                  <form method="POST">
-                    {% csrf_token %}
-                    id
-                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
-                      <option value=""></option>
-                      <option
-                          value="id"
-                          {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "id" %}
-                            selected
-                          {% endif %}>
-                        &DownArrow;
-                      </option>
-                      <option
-                          value="-id"
-                          {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "-id" %}
-                            selected
-                          {% endif %}>
-                        &uparrow;
-                      </option>
-                    </select>
-                  </form>
-                </th>
-
-                <th scope="col">
-                  <form method="POST">
-                    {% csrf_token %}
-                    Událost
-                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
-                      <option value=""></option>
-                      <option
-                          value="predmet"
-                          {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "predmet" %}
-                            selected
-                          {% endif %}>
-                        &DownArrow;
-                      </option>
-                      <option
-                          value="-predmet"
-                          {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "-predmet" %}
-                            selected
-                          {% endif %}>
-                        &uparrow;
-                      </option>
-                    </select>
-                  </form>
-                </th>
-
-                <th scope="col">
-                  <form method="POST">
-                    {% csrf_token %}
-                    Částka
-                    <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
-                      <option value=""></option>
-                      <option
-                          value="castka"
-                          {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "castka" %}
-                            selected
-                          {% endif %}>
-                        &DownArrow;
-                      </option>
-                      <option
-                          value="-castka"
-                          {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "-castka" %}
-                            selected
-                          {% endif %}>
-                        &uparrow;
-                      </option>
-                    </select>
-                  </form>
-                </th>
-
-                {% if user.je_admin %}
-                  <th scope="col">Možnosti</th>
-                {% endif %}
-              </tr>
-            </thead>
-
-            <tbody>
-              <!-- Tabulku naplníme daty. -->
-              {% for udalost in stranka_obj %}
+        {% if stranka_obj %}
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
                 <tr>
-                  <td>
+                  <th scope="col">
                     <form method="POST">
                       {% csrf_token %}
-                      <button
-                          name="detail_udalosti"
-                          value="{{ udalost.pk }}"
-                          class="btn btn-info section__tlacitko">
-                    {{ udalost.id }}
-                      </button>
+                      id
+                      <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
+                        <option value=""></option>
+                        <option
+                            value="id"
+                            {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "id" %}
+                              selected
+                            {% endif %}>
+                          &DownArrow;
+                        </option>
+                        <option
+                            value="-id"
+                            {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "-id" %}
+                              selected
+                            {% endif %}>
+                          &uparrow;
+                        </option>
+                      </select>
                     </form>
-                  </td>
+                  </th>
 
-                  <td>{{ udalost.predmet }}</td>
+                  <th scope="col">
+                    <form method="POST">
+                      {% csrf_token %}
+                      Událost
+                      <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
+                        <option value=""></option>
+                        <option
+                            value="predmet"
+                            {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "predmet" %}
+                              selected
+                            {% endif %}>
+                          &DownArrow;
+                        </option>
+                        <option
+                            value="-predmet"
+                            {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "-predmet" %}
+                              selected
+                            {% endif %}>
+                          &uparrow;
+                        </option>
+                      </select>
+                    </form>
+                  </th>
 
-                  <td>{{ udalost.castka }} Kč</td>
+                  <th scope="col">
+                    <form method="POST">
+                      {% csrf_token %}
+                      Částka
+                      <select onchange="this.form.submit()" class="seradit_podle" name="seradit">
+                        <option value=""></option>
+                        <option
+                            value="castka"
+                            {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "castka" %}
+                              selected
+                            {% endif %}>
+                          &DownArrow;
+                        </option>
+                        <option
+                            value="-castka"
+                            {% if request.COOKIES.seradit_detail_pojisteni__udalosti == "-castka" %}
+                              selected
+                            {% endif %}>
+                          &uparrow;
+                        </option>
+                      </select>
+                    </form>
+                  </th>
 
-                  <!--
-                    Pokud je uživatel administrátor, zobrazí se mu
-                  u každé položky možnosti 'odstranit' a 'upravit'.
-                  -->
                   {% if user.je_admin %}
-                    <td>
-                      <form method="post">
-                        {% csrf_token %}
-                        <div class="tlacitka_mezery">
-                          <!--
-                            div odstranit objekt a potvrzovací
-                          tlačítko
-                          -->
-                          <div>
-                            <input
-                                type="checkbox"
-                                class="odstranit_potvrzeni"
-                                name="odstranit_potvrzeni"
-                            >
-                            <button
-                                name="odstranit_udalost"
-                                class="btn btn-danger section__tlacitko"
-                                value="{{ udalost.pk }}">
-                              Odstranit
-                            </button>
-                          </div>
-                          <button
-                              name="upravit_udalost"
-                              class="btn btn-zelene section__tlacitko"
-                              value="{{ udalost.pk }}">
-                            Upravit
-                          </button>
-                        </div>
-                      </form>
-                    </td>
+                    <th scope="col">Možnosti</th>
                   {% endif %}
                 </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+
+              <tbody>
+                <!-- Tabulku naplníme daty. -->
+                {% for udalost in stranka_obj %}
+                  <tr>
+                    <td>
+                      <form method="POST">
+                        {% csrf_token %}
+                        <button
+                            name="detail_udalosti"
+                            value="{{ udalost.pk }}"
+                            class="btn btn-info section__tlacitko">
+                      {{ udalost.id }}
+                        </button>
+                      </form>
+                    </td>
+
+                    <td>{{ udalost.predmet }}</td>
+
+                    <td>{{ udalost.castka }} Kč</td>
+
+                    <!--
+                      Pokud je uživatel administrátor, zobrazí se mu
+                    u každé položky možnosti 'odstranit' a 'upravit'.
+                    -->
+                    {% if user.je_admin %}
+                      <td>
+                        <form method="post">
+                          {% csrf_token %}
+                          <div class="tlacitka_mezery">
+                            <!--
+                              div odstranit objekt a potvrzovací
+                            tlačítko
+                            -->
+                            <div>
+                              <input
+                                  type="checkbox"
+                                  class="odstranit_potvrzeni"
+                                  name="odstranit_potvrzeni"
+                              >
+                              <button
+                                  name="odstranit_udalost"
+                                  class="btn btn-danger section__tlacitko"
+                                  value="{{ udalost.pk }}">
+                                Odstranit
+                              </button>
+                            </div>
+                            <button
+                                name="upravit_udalost"
+                                class="btn btn-zelene section__tlacitko"
+                                value="{{ udalost.pk }}">
+                              Upravit
+                            </button>
+                          </div>
+                        </form>
+                      </td>
+                    {% endif %}
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
 
         <!-- Vloží pod tabulku objekt stránkovače. -->
         {% include 'strankovani.html' %}
