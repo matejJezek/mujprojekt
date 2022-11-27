@@ -659,8 +659,8 @@ class Pojistenci_index(generic.ListView):
                                 os.remove(pojistenec.fotografie.path)
                             except:
                                 messages.error(
-                                    request, """Nepodařilo se odstranit fotografii
-                                    pojištěnce ze složky."""
+                                    request, """Nepodařilo se odstranit
+                                    fotografii pojištěnce ze složky."""
                                 )
 
                         pojistenec.delete()
