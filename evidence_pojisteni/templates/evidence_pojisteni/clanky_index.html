@@ -1,0 +1,336 @@
+<!-- Stránka 'Pojištěnci' s tabulkou všech pojištěnců. -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <script src="https://cdn.tiny.cloud/1/4dhgaisawk13pvplzlo7no1qvukvuu6rumw35rawj98ad604/tinymce/6/tinymce.min.js"
+      referrerpolicy="origin">
+    </script>
+    <script 
+      src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js">
+    </script>
+  </head>
+  <body>
+    {% extends "sablona.html" %}
+    {% load rest_framework %}
+    {% block content %}
+    <header class="sablona__section__header">
+      <div class="tlacitka_blog_menu">
+        <a
+            href="{% url 'clanek-list' %}"
+            class="btn btn-zelene section__tlacitko">
+          Články
+        </a>
+
+        <a
+            href="{% url 'uzivatel-list' %}"
+            class="btn btn-zelene section__tlacitko">
+          Autoři
+        </a>
+      </div>
+
+      <h1 class="nadpis1">Články</h1>
+    </header>
+
+    <section class="sablona__section__section">
+      <!--
+        Responzivní Bootstrap tabulka s výčtem všech článků.
+      -->
+    {% if stranka_obj %}
+      <div class="formular">
+        <form id="formular_hledat">
+          <label>Hledejte v článcích: 
+            <input
+                type="text"
+                name="text_hledat"
+            >
+          </label>
+
+          <input
+              type="submit"
+              class="btn btn-primary section__tlacitko tlacitko_formulare"
+              value="Vyheldat"
+          />
+        </form>
+
+        <button
+            class="btn btn-danger section__tlacitko tlacitko_formulare"
+            onclick="odstran_cookie_vyhledat()">
+          Zrušit vyhledávání
+        </button>
+      </div>
+
+      <script>
+        $("#formular_hledat").submit(function (event) {
+            
+            event.preventDefault();
+
+            var text_hledat = document.getElementsByName("text_hledat")
+              [0].value.trim();
+
+            if (text_hledat == null || text_hledat == "") {
+              alert("Error: Vyplňte text, který chcete vyhledat.");
+              return false;
+            }
+            
+            document.cookie = "text_hledat=" + text_hledat;
+
+            location.href = "{% url 'clanek-list' %}";
+        });
+      </script>
+
+      <script>
+        function nacti_cookie(name) {
+          const value = `; ${document.cookie}`;
+          const parts = value.split(`; ${name}=`);
+          if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        function odstran_cookie_vyhledat() {
+          document.cookie = "text_hledat=;expires=" + new Date(0).toUTCString();
+          location.href = "{% url 'clanek-list' %}";
+        }
+
+        var text_hledat_pole = document.getElementsByName("text_hledat")[0];
+
+        if (nacti_cookie('text_hledat') != null &&
+            nacti_cookie('text_hledat') != "") {
+          text_hledat_pole.value = nacti_cookie('text_hledat');
+        }
+      </script>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">
+                Název
+                <select
+                    onchange="nastav_cookie_seradit('nazev_seradit')"
+                    class="seradit_podle"
+                    name="nazev_seradit">
+                  <option value=""></option>
+                  <option
+                      value="nazev"
+                      {% if request.COOKIES.seradit_clanky_index == "nazev" %}
+                        selected
+                      {% endif %}>
+                    &DownArrow;
+                  </option>
+                  <option
+                      value="-nazev"
+                      {% if request.COOKIES.seradit_clanky_index == "-nazev" %}
+                        selected
+                      {% endif %}>
+                    &uparrow;
+                  </option>
+                </select>
+              </th>
+
+              <th scope="col">
+                Autor
+                <select
+                    onchange="nastav_cookie_seradit('autor')"
+                    class="seradit_podle"
+                    name="autor">
+                  <option value=""></option>
+                  <option
+                      value="email"
+                      {% if request.COOKIES.seradit_clanky_index == "email" %}
+                        selected
+                      {% endif %}>
+                    &DownArrow;
+                  </option>
+                  <option
+                      value="-email"
+                      {% if request.COOKIES.seradit_clanky_index == "-email" %}
+                        selected
+                      {% endif %}>
+                    &uparrow;
+                  </option>
+                </select>
+              </th>
+
+              <th scope="col">
+                Vytvořeno
+                <select
+                    onchange="nastav_cookie_seradit('vytvoreno')"
+                    class="seradit_podle"
+                    name="vytvoreno">
+                  <option value=""></option>
+                  <option
+                      value="vytvoreno"
+                      {% if request.COOKIES.seradit_clanky_index == "vytvoreno" %}
+                        selected
+                      {% endif %}>
+                    &DownArrow;
+                  </option>
+                  <option
+                      value="-vytvoreno"
+                      {% if request.COOKIES.seradit_clanky_index == "-vytvoreno" %}
+                        selected
+                      {% endif %}>
+                    &uparrow;
+                  </option>
+                </select>
+              </th>
+
+              <th scope="col">
+                Aktualizováno
+                <select
+                    onchange="nastav_cookie_seradit('aktualizovano')"
+                    class="seradit_podle"
+                    name="aktualizovano">
+                  <option value=""></option>
+                  <option
+                      value="aktualizovano"
+                      {% if request.COOKIES.seradit_clanky_index == "aktualizovano" %}
+                        selected
+                      {% endif %}>
+                    &DownArrow;
+                  </option>
+                  <option
+                      value="-aktualizovano"
+                      {% if request.COOKIES.seradit_clanky_index == "-aktualizovano" %}
+                        selected
+                      {% endif %}>
+                    &uparrow;
+                  </option>
+                </select>
+              </th>
+
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Tabulku naplníme daty. -->
+            {% for clanek in stranka_obj %}
+              <tr>
+                <td>
+                  <a href="{{ clanek.url }}">{{ clanek.nazev }}</a>
+                </td>
+
+                <td>
+                  <a href="{{ clanek.autor }}">{{ clanek.autor_email }}</a>
+                </td>
+
+                <td>
+                  {{ clanek.vytvoreno }}
+                </td>
+
+                <td>
+                  {{ clanek.aktualizovano }}
+                </td>
+
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+      <script>
+        function nastav_cookie_seradit(sloupec) {
+
+          var seradit = document.getElementsByName(sloupec)
+              [0].value.trim();
+
+            if (seradit == null || seradit == "") {
+              return false;
+            }
+            
+            document.cookie = "seradit_clanky_index=" + seradit;
+
+            location.href = "{% url 'clanek-list' %}";
+        }
+      </script>
+
+      <!-- Vloží pod tabulku objekt stránkovače. -->
+      {% include 'strankovani.html' %}
+
+      <h2 class="nadpis2">Přidat článek</h2>
+
+      {% if user.je_admin %}
+        <form id="formular">
+          {% csrf_token %}
+          {% render_form serializer_clanek %}
+          <script>
+            tinymce.init({
+              selector: 'textarea',
+              plugins: 'emoticons image link searchreplace table visualblocks wordcount',
+              toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+              tinycomments_mode: 'embedded',
+              tinycomments_author: 'Author name',
+              mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+              ]
+            });
+          </script>
+          <br>
+          <input
+              type="submit"
+              class="btn btn-primary section__tlacitko tlacitko_formulare"
+          />
+
+          <script>
+            $("#formular").submit(function (event) {
+                
+                event.preventDefault();
+
+                tinyMCE.triggerSave()
+
+                var nazev = document.getElementsByName("nazev")[0].value.trim()
+                var obsah = document.getElementsByName("obsah")[0].value.trim()
+
+                if ((nazev == null || nazev == "") ||
+                    (obsah == null || obsah == "")) {
+                  alert("Error: Vyplňte všechna pole formuláře.");
+                  return false;
+                }
+
+                $.ajax({
+                    url: "{% url 'clanek-list' %}",
+                    headers: {
+                        'Conten-Type': 'application/json',
+                        'X-CSRFToken': nacti_cookie('csrftoken')
+                    },
+                    type: "POST",
+                    data: {
+                      'nazev': nazev,
+                      'obsah': obsah,
+                    },
+
+                    beforeSend: function () {
+                        $('.tlacitko_formulare').prop('disabled', true);
+                    },
+                    success: function () {
+                        alert( 'Info: Článek byl uložen.' );
+                        location.href = "{% url 'clanek-list' %}";
+                    },
+                    error: function (rs, e) {
+                        alert( 
+                          'Error: Článek nebyl uložen. Chyba ' +
+                          rs.status
+                        );
+                        location.href = "{% url 'clanek-list' %}";
+                    },
+                    complete: function () {
+                        $('.tlacitko_formulare').prop('disabled', false);
+                    }
+                }); // end ajax
+            });
+          </script>
+
+        </form>
+      {% else %}
+        <p>
+          Přidat článek může pouze přihlášený uživatel s právy
+        <strong>administrátora</strong>.
+        </p>
+      {% endif %}
+
+    </section>
+    {% endblock %}
+  </body>
+</html>

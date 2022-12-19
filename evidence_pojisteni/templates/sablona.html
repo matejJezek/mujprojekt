@@ -49,9 +49,15 @@ poskytované aplikací. Např. 'Uživatel 24 byl odstraněn' a podobně.
 
             <a
                 href="{% url 'o_aplikaci' %}"
-                class="menu__tlacitko menu__tlacitko--sede
-                        menu__tlacitko--krajni--prave">
+                class="menu__tlacitko menu__tlacitko--sede">
               O&nbsp;aplikaci
+            </a>
+
+            <a
+            href="{% url 'blog_index' %}"
+            class="menu__tlacitko menu__tlacitko--sede
+                    menu__tlacitko--krajni--prave">
+            Blog (Django REST)
             </a>
           </div>
 

@@ -1,16 +1,24 @@
-from copy import copy
+from copy import copy, deepcopy
 from distutils.log import error
 import math
 import os
-from .models import Uzivatel, Pojistenec, Pojisteni, Udalost
+from .models import Uzivatel, Pojistenec, Pojisteni, Udalost, Clanek
 from .forms import Pojistenec_formular, Pojisteni_formular, Udalost_formular
 from .forms import Uzivatel_prihlaseni_formular
-from django.shortcuts import render, redirect
-from django.http import request
+from .serializers import Clanek_serializer, Autor_serializer
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import request, QueryDict
 from django.views import generic
 from django.contrib import messages
 from django.core.paginator import Paginator, Page
 from django.contrib.auth import login, logout, authenticate
+from rest_framework.response import Response
+from rest_framework import permissions, renderers, viewsets, status, views
+from rest_framework.reverse import reverse
+from rest_framework.decorators import action, renderer_classes
+from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
+from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 
 # Create your views here.
 
@@ -239,7 +247,8 @@ přesměrování.
 def zobraz_stranku(
         request: object, adresa_stranky: str,
         slovnik_k_odeslani: dict = None, seradit_co: str = None,
-        seradit_podle: str = None, 	trida_objektu: object = None
+        seradit_podle: str = None, trida_objektu: object = None,
+        django_rest: bool = False
         ) -> object:
     """
     Generuje objekt 'response' s přesměrováním na
@@ -263,6 +272,8 @@ jakého sloupečku řadíme a jestli směrem nahoru nebo dolů
 (např. 'prijmeni' nebo '-prijmeni'), defaults to None.
     :param trida_objektu: obsahuje objekt, který chceme seřadit,
 defaults to None.
+    :param django_rest bool: informace, zda požadavek na zobrazení
+stránky přišel z pohledu konstruovaného frameworkem Django Rest.
     :return object: Objekt HTTP odpovědi.
     """
 
@@ -270,6 +281,12 @@ defaults to None.
     # načítat výčet dat z dabáze, je úloha snadná a rovnou zobrazíme
     # stránku.
     if not seradit_co:
+
+        # Pokud dotaz na zobrazení stránky přišel z funkcionality
+        # frameworku Django Rest.
+        if django_rest:
+            return Response(slovnik_k_odeslani, template_name=adresa_stranky)
+
         return render(request, adresa_stranky, slovnik_k_odeslani)
 
     # Proměnná 'seradit_podle' obsahuje znak '0', pokud řazení vzešlo
@@ -278,6 +295,8 @@ defaults to None.
     # znak '0' a hodnota se neuloží do COOKIES.
     # proměnná 'seradit_podle_puvodni' obsahuje původní hodnotu
     # 'seradit_podle', tedy včetně znaku '0', pokud je přítomen.
+    if seradit_podle == '0':
+        seradit_podle = '-id'
     seradit_podle_puvodni = seradit_podle
 
     # Pokud požadavek na řazení neodeslal uživatel.
@@ -328,7 +347,7 @@ defaults to None.
         ) * pocet_objektu_na_stranku
     else:
         preskocit_objektu = 0
-
+    
     # Blok podmínek, které určují, co řadíme a do proměnné
     # 'objekty_na_stranku' nám ukládá seřazené objekty podle daných
     # kritérií v počtu na danou stránku.
@@ -344,6 +363,102 @@ defaults to None.
             LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
             """
         )
+    
+    elif seradit_co == 'seradit_clanky_index':
+
+        if 'text_hledat' in request.COOKIES:
+            text_hledat = request.COOKIES['text_hledat']
+
+            pocet_objektu_celkem = len(trida_objektu.objects.raw(
+                    f"""
+                    SELECT clanek.id
+                    FROM evidence_pojisteni_{trida_objektu.__name__.lower()}_virtual AS virt
+                    JOIN evidence_pojisteni_{trida_objektu.__name__.lower()} AS clanek ON clanek.id = virt.rowid
+                    WHERE evidence_pojisteni_{trida_objektu.__name__.lower()}_virtual
+                    MATCH {"'{}'".format(text_hledat)}
+                    """
+                ))
+
+            if seradit_podle_raw == 'email':
+                objekty_na_stranku = trida_objektu.objects.raw(
+                    f"""
+                    SELECT clanek.id
+                    FROM evidence_pojisteni_{trida_objektu.__name__.lower()}_virtual AS virt
+                    JOIN evidence_pojisteni_{trida_objektu.__name__.lower()} AS clanek ON clanek.id = virt.rowid
+                    JOIN evidence_pojisteni_uzivatel AS uzivatel ON clanek.autor_id = uzivatel.id
+                    WHERE evidence_pojisteni_{trida_objektu.__name__.lower()}_virtual
+                    MATCH {"'{}'".format(text_hledat)}
+                    ORDER BY uzivatel.{seradit_podle_raw} {smer}
+                    LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
+                    """
+                )
+
+            else:
+                objekty_na_stranku = trida_objektu.objects.raw(
+                    f"""
+                    SELECT clanek.id
+                    FROM evidence_pojisteni_{trida_objektu.__name__.lower()}_virtual AS virt
+                    JOIN evidence_pojisteni_{trida_objektu.__name__.lower()} AS clanek ON clanek.id = virt.rowid
+                    WHERE evidence_pojisteni_{trida_objektu.__name__.lower()}_virtual
+                    MATCH {"'{}'".format(text_hledat)}
+                    ORDER BY clanek.{seradit_podle_raw} {smer}
+                    LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
+                    """
+                )
+        else:
+            pocet_objektu_celkem = trida_objektu.objects.count()
+
+            if seradit_podle_raw == 'email':
+                objekty_na_stranku = trida_objektu.objects.raw(
+                    f"""
+                    SELECT clanek.id
+                    FROM evidence_pojisteni_{trida_objektu.__name__.lower()} AS clanek
+                    JOIN evidence_pojisteni_uzivatel AS uzivatel ON clanek.autor_id = uzivatel.id
+                    ORDER BY {seradit_podle_raw} {smer}
+                    LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
+                    """
+                )
+                
+            else:
+                objekty_na_stranku = trida_objektu.objects.raw(
+                    f"""
+                    SELECT id
+                    FROM evidence_pojisteni_{trida_objektu.__name__.lower()}
+                    ORDER BY {seradit_podle_raw} {smer}
+                    LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
+                    """
+                )
+
+    elif seradit_co == 'seradit_autori_index':
+        pocet_objektu_celkem = trida_objektu.objects.filter(je_admin=True).count()
+
+        if seradit_podle_raw == 'pocet_clanku':
+            seradit_podle_raw = 'count(autor_id)'
+            
+            objekty_na_stranku = trida_objektu.objects.raw(
+                f"""
+                SELECT autor_id AS id
+                FROM evidence_pojisteni_clanek
+                GROUP BY autor_id
+                ORDER BY {seradit_podle_raw} {smer}
+                LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
+                """
+            )
+
+        else:
+            objekty_na_stranku = trida_objektu.objects.raw(
+                f"""
+                SELECT id
+                FROM evidence_pojisteni_{trida_objektu.__name__.lower()}
+                WHERE id IN (
+                    SELECT autor_id
+                    FROM evidence_pojisteni_clanek
+                    GROUP BY autor_id
+                )
+                ORDER BY {seradit_podle_raw} {smer}
+                LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
+                """
+            )
 
     elif (seradit_co == 'seradit_pojisteni_index' or
           seradit_co == 'seradit_udalosti_index'):
@@ -402,14 +517,50 @@ defaults to None.
             """
         )
 
+    elif seradit_co == 'seradit_detail_autora__clanky':
+        autor_id = slovnik_k_odeslani['autor']['id']
+        pocet_objektu_celkem = trida_objektu.objects.filter(
+            autor_id = autor_id
+        ).count()
+        objekty_na_stranku = trida_objektu.objects.raw(
+            f"""
+            SELECT id FROM evidence_pojisteni_{trida_objektu.__name__.lower()}
+            WHERE autor_id = {autor_id}
+            ORDER BY {seradit_podle_raw} {smer}
+            LIMIT {preskocit_objektu}, {pocet_objektu_na_stranku}
+            """
+        )
+
+    # Pokud je objekt součástí funkcionality Django REST, aplikujeme na
+    # něj před odesláním serializer.
+    if django_rest:
+        if (seradit_co == 'seradit_clanky_index' or
+            seradit_co == 'seradit_detail_autora__clanky'):
+
+            serializer = Clanek_serializer(
+                objekty_na_stranku,
+                many=True,
+                context={'request': request}
+            )
+
+        if seradit_co == 'seradit_autori_index':
+
+            serializer = Autor_serializer(
+                objekty_na_stranku, 
+                many=True,
+                context={'request': request}
+            )
+
+        objekty_na_stranku = serializer.data
+
     # Proměnnou 'slovnik_k_odeslani' doplníme o proměnnou
     # 'stranka_obj', tato proměnná obsahuje objekt třídy 'Page', který
     # vrátí funkce 'strankuj'.
     slovnik_k_odeslani.update(
         {
             'stranka_obj': strankuj(
-            request, objekty_na_stranku, pocet_objektu_celkem,
-            pocet_objektu_na_stranku
+                request, objekty_na_stranku, pocet_objektu_celkem,
+                pocet_objektu_na_stranku
             )
         }
     )
@@ -574,6 +725,130 @@ def o_aplikaci(request: object) -> object:
     adresa_stranky = "evidence_pojisteni/o_aplikaci.html"
     return zobraz_stranku(request, adresa_stranky)
 
+def blog_index(request: object) -> object:
+    """
+    Přesměruje na stránku 'blog_index'.
+
+    :param request object: Objekt HTTP dotazu.
+    :return object: Přesměruje na stránku 'blog_index'.
+    """
+
+    adresa_stranky = "evidence_pojisteni/blog_index.html"
+    return zobraz_stranku(request, adresa_stranky)
+
+class AutorViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This viewset automatically provides `list` and `retrieve` actions.
+    """
+    queryset = Uzivatel.objects.filter(je_admin=True)
+    serializer_class = Autor_serializer
+    renderer_classes=[renderers.TemplateHTMLRenderer]
+
+    def retrieve(self, request, pk, format=None):
+
+        try:
+            autor = self.get_object()
+        except:
+            messages.error(
+                request, """Autor neexistuje! Nelze
+                zobrazit jeho detail."""
+            )
+            return redirect('uzivatel-list')
+
+        serializer = Autor_serializer(
+            autor,
+            context={'request': request}
+        )
+
+        return zobraz_stranku(
+            request,
+            adresa_stranky='evidence_pojisteni/detail_autora.html',
+            slovnik_k_odeslani={
+                'autor': serializer.data
+            },
+            trida_objektu=Clanek,
+            seradit_co='seradit_detail_autora__clanky',
+            seradit_podle='-id',
+            django_rest=True 
+        )
+
+    def list(self, request, format=None):
+
+        return zobraz_stranku(
+            request,
+            adresa_stranky='evidence_pojisteni/autori_index.html',
+            slovnik_k_odeslani={},
+            seradit_co='seradit_autori_index',
+            seradit_podle='-id',
+            trida_objektu=Uzivatel,
+            django_rest=True
+        )
+
+class ClanekViewSet(viewsets.ModelViewSet):
+    """
+    This viewset automatically provides `list`, `create`, `retrieve`,
+    `update` and `destroy` actions.
+
+    Additionally we also provide an extra `highlight` action.
+    """
+    queryset = Clanek.objects.all()
+    serializer_class = Clanek_serializer
+    permission_classes = [
+                            IsAdminOrReadOnly,
+                            IsOwnerOrReadOnly
+                         ]
+    template_name = 'evidence_pojisteni/clanky_index.html'
+    renderer_classes = [
+        renderers.JSONRenderer,
+        renderers.TemplateHTMLRenderer
+        ]
+
+    def retrieve(self, request, pk, format=None):
+
+        try:
+            clanek = self.get_object()
+        except:
+            messages.error(
+                request, """Článek neexistuje! Nelze
+                zobrazit jeho detail."""
+            )
+            return redirect('clanek-list')
+
+        serializer_clanek = Clanek_serializer(
+            clanek,
+            context={'request': request}
+        )
+
+        return Response(
+            {
+                'clanek': serializer_clanek.data,
+                'serializer_clanek': serializer_clanek
+            },
+            template_name='evidence_pojisteni/detail_clanku.html'
+        )
+
+    def list(self, request, format=None):
+
+        serializer_clanek = Clanek_serializer(
+            None,
+            context={'request': request}
+        )
+
+        return zobraz_stranku(
+            request,
+            adresa_stranky='evidence_pojisteni/clanky_index.html',
+            slovnik_k_odeslani={
+                'serializer_clanek': serializer_clanek
+            },
+            trida_objektu=Clanek,
+            seradit_co='seradit_clanky_index',
+            seradit_podle='-id',
+            django_rest=True,
+        )
+
+    def perform_create(self, serializer):
+        serializer.save(autor=self.request.user)
+
 class Pojistenci_index(generic.ListView):
     """Pohled pro stránku 'Pojištěnci'."""
 
@@ -581,7 +856,7 @@ class Pojistenci_index(generic.ListView):
     adresy_presmerovani = ['pojistenci_index']
 
     def get(self, request, seradit_podle):
-
+        
         # Pokud je uživatel přihlášen jako administrátor, zobrazí se
         # při daném poždavku stránka 'Pojištěnci', pokud ne, zobrazí se
         # při požadavku úvodní stránka.

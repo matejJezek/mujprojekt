@@ -1,0 +1,177 @@
+<!-- Detail události -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% extends 'sablona.html' %}
+    {% block content %}
+      <header class="sablona__section__header">
+        <div class="tlacitka_blog_menu">
+          <a
+              href="{% url 'clanek-list' %}"
+              class="btn btn-zelene section__tlacitko">
+            Články
+          </a>
+
+          <a
+              href="{% url 'uzivatel-list' %}"
+              class="btn btn-zelene section__tlacitko">
+            Autoři
+          </a>
+        </div>
+
+        <h1 class="nadpis1">Detail autora: {{ autor.email }}</h1>
+      </header>
+
+      <section class="sablona__section__section">
+        <!-- Responzivní Bootstrap tabulka s detaily události. -->
+        <div class="table-responsive">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row">Email</th>
+                <td>
+                  {{ autor.email }}
+                </td>
+              </tr>
+                
+                <th scope="row">Poslední přihlášení</th>
+                <td>{{ autor.last_login }}</td>
+              </tr>
+
+              <tr>
+                <th scope="row">Počet článků</th>
+                <td>{{ autor.clanky|length }}</td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+        <div class="nadpis_pod_objektu">
+          <h2 class="nadpis2">Články</h2>
+        </div>
+
+      {% if stranka_obj %}
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">
+                  Název
+                  <select
+                      onchange="nastav_cookie_seradit('nazev')"
+                      class="seradit_podle"
+                      name="nazev">
+                    <option value=""></option>
+                    <option
+                        value="nazev"
+                        {% if request.COOKIES.seradit_detail_autora__clanky == "nazev" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-nazev"
+                        {% if request.COOKIES.seradit_detail_autora__clanky == "-nazev" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </th>
+
+                <th scope="col">
+                  Vytvořeno
+                  <select
+                      onchange="nastav_cookie_seradit('vytvoreno')"
+                      class="seradit_podle"
+                      name="vytvoreno">
+                    <option value=""></option>
+                    <option
+                        value="vytvoreno"
+                        {% if request.COOKIES.seradit_detail_autora__clanky == "vytvoreno" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-vytvoreno"
+                        {% if request.COOKIES.seradit_detail_autora__clanky == "-vytvoreno" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </th>
+
+                <th scope="col">
+                  Poslední aktualizace
+                  <select
+                      onchange="nastav_cookie_seradit('aktualizovano')"
+                      class="seradit_podle"
+                      name="aktualizovano">
+                    <option value=""></option>
+                    <option
+                        value="aktualizovano"
+                        {% if request.COOKIES.seradit_detail_autora__clanky == "aktualizovano" %}
+                          selected
+                        {% endif %}>
+                      &DownArrow;
+                    </option>
+                    <option
+                        value="-aktualizovano"
+                        {% if request.COOKIES.seradit_detail_autora__clanky == "-aktualizovano" %}
+                          selected
+                        {% endif %}>
+                      &uparrow;
+                    </option>
+                  </select>
+                </th>
+                <!--
+                  Zobrazí se pouze, pokud je uživatel administrátor
+                -->
+              </tr>
+            </thead>
+
+            <tbody>
+              <!-- Tabulku naplníme daty. -->
+              {% for clanek in stranka_obj %}
+                <tr>
+                  <td>
+                    <a href="{{ clanek.url }}">{{ clanek.nazev }}</a>
+                  </td>
+
+                  <td>{{ clanek.vytvoreno }}</td>
+                  
+                  <td>{{ clanek.aktualizovano }}</td>     
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
+        <script>
+          function nastav_cookie_seradit(sloupec) {
+  
+            var seradit = document.getElementsByName(sloupec)
+                [0].value.trim();
+  
+              if (seradit == null || seradit == "") {
+                return false;
+              }
+              
+              document.cookie = "seradit_detail_autora__clanky=" + seradit;
+  
+              location.href = "{% url 'uzivatel-detail' autor.id %}";
+          }
+        </script>
+
+        <!-- Vloží pod tabulku objekt stránkovače. -->
+        {% include 'strankovani.html' %}
+      </section>
+    {% endblock %}
+  </body>
+</html>

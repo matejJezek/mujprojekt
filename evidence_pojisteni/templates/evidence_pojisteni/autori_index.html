@@ -1,0 +1,155 @@
+<!-- Stránka 'Pojištěnci' s tabulkou všech pojištěnců. -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    {% extends "sablona.html" %}
+    {% block content %}
+    <header class="sablona__section__header">
+      <div class="tlacitka_blog_menu">
+        <a
+            href="{% url 'clanek-list' %}"
+            class="btn btn-zelene section__tlacitko">
+          Články
+        </a>
+
+        <a
+            href="{% url 'uzivatel-list' %}"
+            class="btn btn-zelene section__tlacitko">
+          Autoři
+        </a>
+      </div>
+
+      <h1 class="nadpis1">Autoři</h1>
+    </header>
+
+    <section class="sablona__section__section">
+
+      <!--
+        Responzivní Bootstrap tabulka s výčtem všech autorů.
+      -->
+    {% if stranka_obj %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">
+                Autor
+                <select
+                    onchange="nastav_cookie_seradit('email')"
+                    class="seradit_podle"
+                    name="email">
+                  <option value=""></option>
+                  <option
+                      value="email"
+                      {% if request.COOKIES.seradit_autori_index == "email" %}
+                        selected
+                      {% endif %}>
+                    &DownArrow;
+                  </option>
+                  <option
+                      value="-email"
+                      {% if request.COOKIES.seradit_autori_index == "-email" %}
+                        selected
+                      {% endif %}>
+                    &uparrow;
+                  </option>
+                </select>
+              </th>
+
+              <th scope="col">
+                Poslední přihlášení
+                <select
+                    onchange="nastav_cookie_seradit('last_login')"
+                    class="seradit_podle"
+                    name="last_login">
+                  <option value=""></option>
+                  <option
+                      value="last_login"
+                      {% if request.COOKIES.seradit_autori_index == "last_login" %}
+                        selected
+                      {% endif %}>
+                    &DownArrow;
+                  </option>
+                  <option
+                      value="-last_login"
+                      {% if request.COOKIES.seradit_autori_index == "-last_login" %}
+                        selected
+                      {% endif %}>
+                    &uparrow;
+                  </option>
+                </select>
+              </th>
+
+              <th scope="col">
+                Počet článků
+                <select
+                    onchange="nastav_cookie_seradit('pocet_clanku')"
+                    class="seradit_podle"
+                    name="pocet_clanku">
+                  <option value=""></option>
+                  <option
+                      value="pocet_clanku"
+                      {% if request.COOKIES.seradit_autori_index == "pocet_clanku" %}
+                        selected
+                      {% endif %}>
+                    &DownArrow;
+                  </option>
+                  <option
+                      value="-pocet_clanku"
+                      {% if request.COOKIES.seradit_autori_index == "-pocet_clanku" %}
+                        selected
+                      {% endif %}>
+                    &uparrow;
+                  </option>
+                </select>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Tabulku naplníme daty. -->
+            {% for autor in stranka_obj %}
+              <tr>
+                <td>
+                  <a href="{{ autor.url }}">{{ autor.email }}</a>
+                </td>
+
+                <td>
+                  {{ autor.last_login }}
+                </td>
+
+                <td>
+                  {{ autor.clanky|length }}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
+
+      <!-- Vloží pod tabulku objekt stránkovače. -->
+      {% include 'strankovani.html' %}
+
+      <script>
+        function nastav_cookie_seradit(sloupec) {
+
+          var seradit = document.getElementsByName(sloupec)
+              [0].value.trim();
+
+            if (seradit == null || seradit == "") {
+              return false;
+            }
+            
+            document.cookie = "seradit_autori_index=" + seradit;
+
+            location.href = "{% url 'uzivatel-list' %}";
+        }
+      </script>
+    </section>
+    {% endblock %}
+  </body>
+</html>

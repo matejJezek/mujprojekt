@@ -79,6 +79,10 @@ html{
     justify-content:space-evenly;
     flex-wrap: wrap;
 }
+.tlacitka_blog_menu{
+    margin-top: 4px;
+    margin-left: 2px;
+}
 .zprava{
     max-width: 960px;
     border-bottom: 2px solid black;
@@ -113,13 +117,20 @@ h1, h2, th, strong, b{
 em{
     color: #640000ff;
 }
-h1{
+.formular{
+    display: flex;
+    flex-wrap: wrap;
+}
+.formular button{
+    margin-left: 4px;
+}
+.nadpis1{
     color: white;
     background:#640000ff;
     clip-path: polygon(0 0, 100% 0%, 90% 100%, 0% 100%);
     padding: 10px 30px;
 }
-h2{
+.nadpis2{
     color: white;
     background:#640000ff;
     clip-path: polygon(0 0, 100% 0%, 90% 100%, 0% 100%);
@@ -251,6 +262,9 @@ td{
     }
     .menu__tlacitko--krajni--leve{
         border-radius: 6px 0px 0px 6px;
+    }
+    .tlacitka_blog_menu{
+        margin: 0px;
     }
     .zprava{
         width: 960px;

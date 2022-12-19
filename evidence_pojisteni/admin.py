@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Uzivatel, UzivatelManager, Pojistenec, Pojisteni
+from .models import Uzivatel, UzivatelManager, Pojistenec, Pojisteni, Clanek
 from .models import Typ_pojisteni, Udalost
 from django import forms
 from django.contrib.auth.admin import UserAdmin
@@ -59,3 +59,4 @@ admin.site.register(Pojistenec)
 admin.site.register(Pojisteni)
 admin.site.register(Typ_pojisteni)
 admin.site.register(Udalost)
+admin.site.register(Clanek)

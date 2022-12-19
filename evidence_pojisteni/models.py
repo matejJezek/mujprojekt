@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.conf import settings
 
 # Create your models here.
 
@@ -103,6 +104,34 @@ class Udalost(models.Model):
     class Meta:
         verbose_name = "Událost"
         verbose_name_plural = "Události"
+
+class Clanek(models.Model):
+    nazev = models.CharField(
+        max_length=255,
+        verbose_name='Název'
+    )
+    vytvoreno = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Vytvořeno'
+    )
+    aktualizovano = models.DateTimeField(
+        auto_now=True,
+        verbose_name='Naposledy změněno'
+    )
+    obsah = models.TextField(
+        verbose_name='Obsah'
+    )
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='clanky',
+        on_delete=models.CASCADE,
+        verbose_name='Autor'
+    )
+    
+    class Meta:
+        ordering = ['-vytvoreno']
+        verbose_name = "Článek"
+        verbose_name_plural = "Články"
 
 class UzivatelManager(BaseUserManager):
     def create_user(self, email, heslo):

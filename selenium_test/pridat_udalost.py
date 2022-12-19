@@ -12,13 +12,13 @@ from selenium.webdriver.chrome.service import Service
 s = Service('./chromedriver')
 driver = webdriver.Chrome(service=s)
 
-driver.get("http://localhost:8000/evidence_pojisteni/prihlasit_uzivatele/")
+driver.get("http://localhost:8000/prihlasit_uzivatele/")
 
 driver.find_element(By.NAME, "email").send_keys('admin@pj.cz')
 driver.find_element(By.NAME, "heslo").send_keys('admin', Keys.ENTER)
 
 # !!! Změň kolik událostí se má přidat.
-pocet_udalosti = 315
+pocet_udalosti = 1
 
 # !!! Změň počet pojištění, kterým se přiřazují dané události.
 # Tento údaj vybírá náhodně id pojištění v rozsahu
@@ -26,7 +26,7 @@ pocet_udalosti = 315
 max_id_pojisteni = 117
 
 for i in range(pocet_udalosti):
-    driver.get("http://localhost:8000/evidence_pojisteni/nova_udalost/%5B'udalosti_index'%5D/None")
+    driver.get("http://localhost:8000/nova_udalost/%5B'udalosti_index'%5D/None")
 
     pojisteni = f'id pojištění: {random.randint(1, max_id_pojisteni)}'
     castka = random.randint(1, 99) * 1000
@@ -42,4 +42,4 @@ for i in range(pocet_udalosti):
     driver.find_element(By.NAME, "popis").send_keys(popis)
     driver.find_element(By.NAME, "predmet").send_keys(predmet, Keys.ENTER)
 
-time.sleep(0.5)
+time.sleep(5)

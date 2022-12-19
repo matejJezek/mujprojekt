@@ -14,9 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from . import views
-from django.urls import path
+from django.urls import path, include, reverse
+from rest_framework.routers import DefaultRouter
+from rest_framework import renderers
+
+# Vytvoření routeru a registrace pohledů.
+router = DefaultRouter()
+router.register(r'autori', views.AutorViewSet, basename="uzivatel")
+router.register(r'clanky', views.ClanekViewSet, basename="clanek")
 
 urlpatterns = [
+    # API URLs pro sekci 'Blog' jsou nyní nastaveny automaticky pomocí routeru.
+    path('blog/', include(router.urls)),
+
+    path('blog/index/',
+        views.blog_index,
+        name='blog_index'),
+
     # Index, o aplikaci
     path('', views.index, name='index'),
 

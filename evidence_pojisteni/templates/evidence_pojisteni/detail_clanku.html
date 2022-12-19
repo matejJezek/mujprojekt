@@ -1,0 +1,220 @@
+<!-- Detail události -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+    <script
+        src="https://cdn.tiny.cloud/1/4dhgaisawk13pvplzlo7no1qvukvuu6rumw35rawj98ad604/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin">
+    </script>
+    <script 
+        src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js">
+    </script>
+  </head>
+  <body>
+    {% extends 'sablona.html' %}
+    {% load rest_framework %}
+    {% block content %}
+    
+      <header class="sablona__section__header">
+        <div class="tlacitka_blog_menu">
+          <a
+              href="{% url 'clanek-list' %}"
+              class="btn btn-zelene section__tlacitko">
+            Články
+          </a>
+
+          <a
+              href="{% url 'uzivatel-list' %}"
+              class="btn btn-zelene section__tlacitko">
+            Autoři
+          </a>
+        </div>
+
+        <h1 class="nadpis1">{{ clanek.nazev }}</h1>
+      </header>
+
+      <section class="sablona__section__section">
+        <!-- Responzivní Bootstrap tabulka s detaily události. -->
+        <div class="table-responsive">
+          <table class="table">
+            <tbody>
+              <tr>
+                <th scope="row">Autor</th>
+                <td>
+                  <a href="{{ clanek.autor }}">{{ clanek.autor_email }}</a>
+                </td>
+              </tr>
+
+              <tr>
+                <th scope="row">Vytvořeno</th>
+                <td>{{ clanek.vytvoreno }}</td>
+              </tr>
+              <tr>
+
+                <th scope="row">Aktualizováno</th>
+                <td>{{ clanek.aktualizovano }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 class="nadpis2">Obsah</h2>
+        {{ clanek.obsah|safe }}
+
+        <h2 class="nadpis2">Upravit článek</h2>
+        {% if user.email == clanek.autor_email %}
+
+          <form id="formular--upravit">
+            {% csrf_token %}
+            {% render_form serializer_clanek %}
+            <input type="hidden" name="clanek_id" id="clanek_id" value="{{ clanek.id }}"/>
+            <input type="hidden" name="autor" value="{{ clanek.autor }}"/>
+            <script>
+              tinymce.init({
+                selector: 'textarea',
+                plugins: 'emoticons image link searchreplace table visualblocks wordcount',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                tinycomments_mode: 'embedded',
+                tinycomments_author: 'Author name',
+                mergetags_list: [
+                  { value: 'First.Name', title: 'First Name' },
+                  { value: 'Email', title: 'Email' },
+                ]
+              });
+            </script>
+            <br>
+            
+            <input
+                type="submit"
+                class="btn btn-primary section__tlacitko"
+            />
+          </form>
+
+          <form id="formular--odstranit">
+            <!-- div odstranit objekt a potvrzovací tlačítko -->
+            <div>
+              <input
+                  type="checkbox"
+                  id="odstranit_potvrzeni"
+                  class="odstranit_potvrzeni"
+              >
+              <button
+                  type="submit"
+                  class="btn btn-danger section__tlacitko">
+                Odstranit článek
+              </button>
+            </div>
+          </form>
+
+          <script>
+            function nacti_cookie(name) {
+              const value = `; ${document.cookie}`;
+              const parts = value.split(`; ${name}=`);
+              if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+          </script>
+
+          <script>
+            $("#formular--upravit").submit(function (event) {
+
+                event.preventDefault();
+
+                tinyMCE.triggerSave();
+
+                var nazev = document.getElementsByName("nazev")[0].value.trim();
+                var obsah = document.getElementsByName("obsah")[0].value.trim();
+                var autor = document.getElementsByName("autor")[0].value;
+
+                if ((nazev == null || nazev == "") ||
+                    (obsah == null || obsah == "")) {
+                  alert("Error: Vyplňte všechna pole formuláře.");
+                  return false;
+                }
+
+                $.ajax({
+                    url: "{% url 'clanek-detail' clanek.id %}",
+                    headers: {
+                        'Conten-Type': 'application/json',
+                        'X-CSRFToken': nacti_cookie('csrftoken')
+                    },
+                    type: "PUT",
+                    data: {
+                      'nazev': nazev,
+                      'obsah': obsah,
+                      'autor': autor
+                    },
+
+                    beforeSend: function () {
+                        $('.section__tlacitko').prop('disabled', true);
+                    },
+                    success: function () {
+                        alert( 'Info: Článek byl uložen.' );
+                        location.href = "{% url 'clanek-detail' clanek.id %}";
+                    },
+                    error: function (rs, e) {
+                        alert( 
+                            'Error: Článek nebyl uložen. Chyba ' +
+                            rs.status
+                          );
+                        location.href = "{% url 'clanek-detail' clanek.id %}";
+                    },
+                    complete: function () {
+                        $('.section__tlacitko').prop('disabled', false);
+                    }
+                }); // end ajax
+            });
+          </script>
+
+          <script>
+            $("#formular--odstranit").submit(function (event) {
+
+                event.preventDefault();
+
+                var check_box = document.getElementById("odstranit_potvrzeni");
+
+                if (!check_box.checked) {
+                  alert("Info: Pro odstranění článku zaškrtni potvrzovací políčko vedle tlačítka 'Odstranit'.");
+                  return false;
+                }
+
+                $.ajax({
+                    url: "{% url 'clanek-detail' clanek.id %}",
+                    headers: {
+                        'Conten-Type': 'application/json',
+                        'X-CSRFToken': nacti_cookie('csrftoken')
+                    },
+                    type: "DELETE",
+
+                    beforeSend: function () {
+                        $('.section__tlacitko').prop('disabled', true);
+                    },
+                    success: function () {
+                        alert( 'Info: Článek byl odstraněn.' );
+                        location.href = "{% url 'clanek-list' %}";
+                    },
+                    error: function (rs, e) {
+                        alert( 
+                            'Error: Článek nebyl odstraněn. Chyba ' +
+                            rs.status
+                          );
+                        location.reload();
+                    },
+                    complete: function () {
+                        $('.section__tlacitko').prop('disabled', false);
+                    }
+                }); // end ajax
+            });
+          </script>
+
+        {% else %}
+          <p>
+            Upravit nebo odstranit článek může pouze jeho
+          <strong>autor</strong>.
+          </p>
+        {% endif %}
+      </section>
+    {% endblock %}
+
+  </body>
+</html>

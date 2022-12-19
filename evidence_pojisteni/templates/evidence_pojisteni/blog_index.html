@@ -1,0 +1,35 @@
+<!-- Hlavní stránka sekce 'Blog' -->
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8" />
+  </head>
+  <body class="body do_bloku">
+    {% extends "sablona.html" %}
+    {% block content %}
+      <header class="sablona__section__header">
+        <h1 class="nadpis1">Novinky ze světa pojištění</h1>
+      </header>
+
+      <section class="sablona__section__section">
+        <p>
+          Vítejte na blogu o novinkách ze světa pojištění. Na tomto místě
+        mohou uživatelé s právy <strong>administrátora</strong> přidávat
+        zajímavé příspěvky.
+        </p>
+
+        <a
+            href="{% url 'clanek-list' %}"
+            class="btn btn-zelene section__tlacitko">
+          Články
+        </a>
+
+        <a
+            href="{% url 'uzivatel-list' %}"
+            class="btn btn-zelene section__tlacitko">
+          Autoři
+        </a>
+      </section>
+    {% endblock %}
+  </body>
+</html>
