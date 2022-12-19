@@ -3,6 +3,8 @@ Nasazená aplikace na serveru:
 - pojistovnajezek.cz
 
 Pro spuštění lokálně je potřeba nainstalovat:
-- pillow
+- Django
+- djangorestframework
 - django-crispy-forms
 - crispy-bootstrap5
+- pillow
