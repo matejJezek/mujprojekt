@@ -36,8 +36,6 @@ ALLOWED_HOSTS = ['pojistovna-jezek-5973.rostiapp.cz', 'pojistovnajezek.cz', 'www
 # Application definition
 
 INSTALLED_APPS = [
-    # 'django-crispy-forms' ulehčuje stylovat formuláře ve frameworku
-    # 'django'.
     'crispy_forms',
     'crispy_bootstrap5',
     'evidence_pojisteni',

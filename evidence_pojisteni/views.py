@@ -351,8 +351,9 @@ stránky přišel z pohledu konstruovaného frameworkem Django Rest.
     # Blok podmínek, které určují, co řadíme a do proměnné
     # 'objekty_na_stranku' nám ukládá seřazené objekty podle daných
     # kritérií v počtu na danou stránku.
-    # raw SQL dotazy jsou zde využity, protože přednastavené databázové
-    # metody v DJANGU nenabízí možnost OFFSETU v databázi.
+    # Raw SQL dotazy jsou zde využity, protože přednastavené databázové
+    # metody v DJANGU nenabízí možnost OFFSETU v databázi, spojování tabulek
+    # a fulltextové vyhledávání.
     if seradit_co == 'seradit_pojistenci_index':
         pocet_objektu_celkem = trida_objektu.objects.count()
         objekty_na_stranku = trida_objektu.objects.raw(
@@ -565,6 +566,11 @@ stránky přišel z pohledu konstruovaného frameworkem Django Rest.
         }
     )
 
+    # Pokud dotaz na zobrazení stránky přišel z funkcionality
+    # frameworku Django Rest.
+    if django_rest:
+        return Response(slovnik_k_odeslani, template_name=adresa_stranky)
+
     # Objektu 'response' přiřadíme požadavek na zobrazení 'templete'.
     response = render(request, adresa_stranky, slovnik_k_odeslani)
 
@@ -742,9 +748,9 @@ class AutorViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = Uzivatel.objects.filter(je_admin=True)
     serializer_class = Autor_serializer
-    renderer_classes=[renderers.TemplateHTMLRenderer]
+    renderer_classes = [renderers.TemplateHTMLRenderer]
 
-    def retrieve(self, request, pk, format=None):
+    def retrieve(self, request, pk=None, format=None):
 
         try:
             autor = self.get_object()
@@ -755,7 +761,7 @@ class AutorViewSet(viewsets.ReadOnlyModelViewSet):
             )
             return redirect('uzivatel-list')
 
-        serializer = Autor_serializer(
+        serializer_autor = Autor_serializer(
             autor,
             context={'request': request}
         )
@@ -764,12 +770,35 @@ class AutorViewSet(viewsets.ReadOnlyModelViewSet):
             request,
             adresa_stranky='evidence_pojisteni/detail_autora.html',
             slovnik_k_odeslani={
-                'autor': serializer.data
+                'autor': serializer_autor.data
             },
             trida_objektu=Clanek,
             seradit_co='seradit_detail_autora__clanky',
             seradit_podle='-id',
             django_rest=True 
+        )
+
+    @action(detail=True, renderer_classes=[renderers.JSONRenderer])
+    def json_detail(self, request, pk=None, format=None):
+
+        try:
+            autor = self.get_object()
+        except:
+            messages.error(
+                request, """Autor neexistuje! Nelze
+                zobrazit jeho detail."""
+            )
+            return redirect('uzivatel-list')
+
+        serializer_autor = Autor_serializer(
+            autor,
+            context={'request': request}
+        )
+
+        return Response(
+            {
+                'autor': serializer_autor.data,
+            },
         )
 
     def list(self, request, format=None):
@@ -783,6 +812,26 @@ class AutorViewSet(viewsets.ReadOnlyModelViewSet):
             trida_objektu=Uzivatel,
             django_rest=True
         )
+    
+    @action(detail=False, renderer_classes=[renderers.JSONRenderer])
+    def json_list(self, request, format=None):
+
+        autori = Uzivatel.objects.filter(je_admin=True)
+
+        serializer_autor = Autor_serializer(
+            autori,
+            many=True,
+            context={'request': request}
+        )
+
+        return Response(
+            {
+                'autori': serializer_autor.data,
+            },
+        )
+
+    def perform_create(self, serializer):
+        serializer.save(autor=self.request.user)
 
 class ClanekViewSet(viewsets.ModelViewSet):
     """
@@ -794,16 +843,15 @@ class ClanekViewSet(viewsets.ModelViewSet):
     queryset = Clanek.objects.all()
     serializer_class = Clanek_serializer
     permission_classes = [
-                            IsAdminOrReadOnly,
-                            IsOwnerOrReadOnly
-                         ]
-    template_name = 'evidence_pojisteni/clanky_index.html'
+        IsAdminOrReadOnly,
+        IsOwnerOrReadOnly
+        ]
     renderer_classes = [
         renderers.JSONRenderer,
         renderers.TemplateHTMLRenderer
         ]
 
-    def retrieve(self, request, pk, format=None):
+    def retrieve(self, request, pk=None, format=None):
 
         try:
             clanek = self.get_object()
@@ -827,6 +875,29 @@ class ClanekViewSet(viewsets.ModelViewSet):
             template_name='evidence_pojisteni/detail_clanku.html'
         )
 
+    @action(detail=True, renderer_classes=[renderers.JSONRenderer])
+    def json_detail(self, request, pk=None, format=None):
+        
+        try:
+            clanek = self.get_object()
+        except:
+            messages.error(
+                request, """Článek neexistuje! Nelze
+                zobrazit jeho detail."""
+            )
+            return redirect('clanek-list')
+
+        serializer_clanek = Clanek_serializer(
+            clanek,
+            context={'request': request}
+        )
+
+        return Response(
+            {
+                'clanek': serializer_clanek.data,
+            },
+        )
+
     def list(self, request, format=None):
 
         serializer_clanek = Clanek_serializer(
@@ -844,6 +915,23 @@ class ClanekViewSet(viewsets.ModelViewSet):
             seradit_co='seradit_clanky_index',
             seradit_podle='-id',
             django_rest=True,
+        )
+
+    @action(detail=False, renderer_classes=[renderers.JSONRenderer])
+    def json_list(self, request, format=None):
+
+        clanky = Clanek.objects.all()
+
+        serializer_clanek = Clanek_serializer(
+            clanky,
+            many=True,
+            context={'request': request}
+        )
+
+        return Response(
+            {
+                'clanky': serializer_clanek.data,
+            },
         )
 
     def perform_create(self, serializer):

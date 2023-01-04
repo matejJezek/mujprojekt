@@ -9,16 +9,24 @@
     {% block content %}
       <header class="sablona__section__header">
         <div class="tlacitka_blog_menu">
-          <a
-              href="{% url 'clanek-list' %}"
-              class="btn btn-zelene section__tlacitko">
-            Články
-          </a>
+          <div>
+            <a
+                href="{% url 'clanek-list' %}"
+                class="btn btn-zelene section__tlacitko">
+              Články
+            </a>
+
+            <a
+                href="{% url 'uzivatel-list' %}"
+                class="btn btn-zelene section__tlacitko">
+              Autoři
+            </a>
+          </div>
 
           <a
-              href="{% url 'uzivatel-list' %}"
+              href="{% url 'uzivatel-json-detail' autor.id %}"
               class="btn btn-zelene section__tlacitko">
-            Autoři
+            Autor v JSON
           </a>
         </div>
 

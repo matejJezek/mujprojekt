@@ -80,6 +80,9 @@ html{
     flex-wrap: wrap;
 }
 .tlacitka_blog_menu{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     margin-top: 4px;
     margin-left: 2px;
 }

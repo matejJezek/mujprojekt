@@ -18,16 +18,24 @@
     
       <header class="sablona__section__header">
         <div class="tlacitka_blog_menu">
-          <a
-              href="{% url 'clanek-list' %}"
-              class="btn btn-zelene section__tlacitko">
-            Články
-          </a>
+          <div>
+            <a
+                href="{% url 'clanek-list' %}"
+                class="btn btn-zelene section__tlacitko">
+              Články
+            </a>
+
+            <a
+                href="{% url 'uzivatel-list' %}"
+                class="btn btn-zelene section__tlacitko">
+              Autoři
+            </a>
+          </div>
 
           <a
-              href="{% url 'uzivatel-list' %}"
+              href="{% url 'clanek-json-detail' clanek.id %}"
               class="btn btn-zelene section__tlacitko">
-            Autoři
+            Článek v JSON
           </a>
         </div>
 
@@ -69,7 +77,6 @@
             {% csrf_token %}
             {% render_form serializer_clanek %}
             <input type="hidden" name="clanek_id" id="clanek_id" value="{{ clanek.id }}"/>
-            <input type="hidden" name="autor" value="{{ clanek.autor }}"/>
             <script>
               tinymce.init({
                 selector: 'textarea',
@@ -83,7 +90,6 @@
                 ]
               });
             </script>
-            <br>
             
             <input
                 type="submit"
@@ -124,7 +130,6 @@
 
                 var nazev = document.getElementsByName("nazev")[0].value.trim();
                 var obsah = document.getElementsByName("obsah")[0].value.trim();
-                var autor = document.getElementsByName("autor")[0].value;
 
                 if ((nazev == null || nazev == "") ||
                     (obsah == null || obsah == "")) {
@@ -142,13 +147,12 @@
                     data: {
                       'nazev': nazev,
                       'obsah': obsah,
-                      'autor': autor
                     },
 
                     beforeSend: function () {
                         $('.section__tlacitko').prop('disabled', true);
                     },
-                    success: function () {
+                    success: function (data) {
                         alert( 'Info: Článek byl uložen.' );
                         location.href = "{% url 'clanek-detail' clanek.id %}";
                     },

@@ -16,16 +16,24 @@
     {% block content %}
     <header class="sablona__section__header">
       <div class="tlacitka_blog_menu">
-        <a
-            href="{% url 'clanek-list' %}"
-            class="btn btn-zelene section__tlacitko">
-          Články
-        </a>
+        <div>
+          <a
+              href="{% url 'clanek-list' %}"
+              class="btn btn-zelene section__tlacitko">
+            Články
+          </a>
+
+          <a
+              href="{% url 'uzivatel-list' %}"
+              class="btn btn-zelene section__tlacitko">
+            Autoři
+          </a>
+        </div>
 
         <a
-            href="{% url 'uzivatel-list' %}"
+            href="{% url 'clanek-json-list' %}"
             class="btn btn-zelene section__tlacitko">
-          Autoři
+          Články v JSON
         </a>
       </div>
 
@@ -267,7 +275,7 @@
               ]
             });
           </script>
-          <br>
+
           <input
               type="submit"
               class="btn btn-primary section__tlacitko tlacitko_formulare"
