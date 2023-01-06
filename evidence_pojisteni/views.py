@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator, Page
 from django.contrib.auth import login, logout, authenticate
 from rest_framework.response import Response
-from rest_framework import permissions, renderers, viewsets, status, views
+from rest_framework import permissions, renderers, viewsets, status, views, pagination
 from rest_framework.reverse import reverse
 from rest_framework.decorators import action, renderer_classes
 from .permissions import IsOwnerOrReadOnly, IsAdminOrReadOnly
@@ -818,20 +818,15 @@ class AutorViewSet(viewsets.ReadOnlyModelViewSet):
 
         autori = Uzivatel.objects.filter(je_admin=True)
 
-        serializer_autor = Autor_serializer(
-            autori,
-            many=True,
-            context={'request': request}
-        )
+        stranka = self.paginate_queryset(autori)
 
-        return Response(
-            {
-                'autori': serializer_autor.data,
-            },
-        )
+        if stranka is not None:
+            serializer = self.get_serializer(stranka, many=True)
+            return self.get_paginated_response(serializer.data)
 
-    def perform_create(self, serializer):
-        serializer.save(autor=self.request.user)
+        serializer_autori = self.get_serializer(autori, many=True)
+
+        return Response(serializer_autori.data)
 
 class ClanekViewSet(viewsets.ModelViewSet):
     """
@@ -899,7 +894,7 @@ class ClanekViewSet(viewsets.ModelViewSet):
         )
 
     def list(self, request, format=None):
-
+        
         serializer_clanek = Clanek_serializer(
             None,
             context={'request': request}
@@ -919,20 +914,22 @@ class ClanekViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, renderer_classes=[renderers.JSONRenderer])
     def json_list(self, request, format=None):
-
+        
         clanky = Clanek.objects.all()
+        hledane_slovo = request.query_params.get('obsah')
 
-        serializer_clanek = Clanek_serializer(
-            clanky,
-            many=True,
-            context={'request': request}
-        )
+        if hledane_slovo is not None:
+            clanky = clanky.filter(obsah__icontains=hledane_slovo)
 
-        return Response(
-            {
-                'clanky': serializer_clanek.data,
-            },
-        )
+        stranka = self.paginate_queryset(clanky)
+
+        if stranka is not None:
+            serializer = self.get_serializer(stranka, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer_clanky = self.get_serializer(clanky, many=True)
+
+        return Response(serializer_clanky.data)
 
     def perform_create(self, serializer):
         serializer.save(autor=self.request.user)
